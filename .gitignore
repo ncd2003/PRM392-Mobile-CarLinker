@@ -1,0 +1,51 @@
+# Created by Google's Gemini for a Java (Android) project
+
+### Android / Java ###
+# Compiled Java class files
+*.class
+
+# Generated build folders
+build/
+.gradle/
+captures/
+.cxx/
+build-cache/
+
+# Generated files
+*.apk
+*.aab
+*.dex
+*.ap_
+
+# Local configuration file (CRITICAL: Contains SDK path and sensitive info)
+local.properties
+
+# Log files
+*.log
+
+### IDE Files (Android Studio / IntelliJ) ###
+# IDE-specific settings
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Gradle files
+gradle-daemon.out
+gradle-daemon.out.*
+
+### Sensitive Information ###
+# Signing keys (DO NOT commit these to your repository)
+*.jks
+*.keystore
+*.p12
+keystores/
+
+### OS-specific Files (macOS, Windows, Linux) ###
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

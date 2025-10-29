@@ -1,51 +1,53 @@
-# Created by Google's Gemini for a Java (Android) project
+# ===============
+# Tệp .gitignore chuẩn cho dự án Android (Java/Kotlin)
+# ===============
 
-### Android / Java ###
-# Compiled Java class files
-*.class
+### 1. Tệp Cấu hình Local (Rất quan trọng) ###
+# Chứa đường dẫn SDK và thông tin nhạy cảm (API keys, v.v.)
+# KHÔNG BAO GIỜ commit tệp này
+local.properties
 
-# Generated build folders
+### 2. Thư mục Build & Artifacts (Tệp được tạo ra) ###
+# Thư mục build của Gradle
 build/
 .gradle/
-captures/
-.cxx/
-build-cache/
 
-# Generated files
+# Tệp build từ C/C++ (NDK)
+.cxx/
+.externalNativeBuild/
+
+# Tệp kết quả (APK, AAB, DEX)
 *.apk
 *.aab
 *.dex
 *.ap_
 
-# Local configuration file (CRITICAL: Contains SDK path and sensitive info)
-local.properties
+# Thư mục chụp màn hình
+captures/
 
-# Log files
-*.log
-
-### IDE Files (Android Studio / IntelliJ) ###
-# IDE-specific settings
+### 3. Tệp IDE (Android Studio / IntelliJ) ###
+# Cài đặt riêng của IDE. 
+# An toàn và đơn giản nhất là bỏ qua toàn bộ thư mục .idea/
 .idea/
-*.iml
-*.ipr
-*.iws
 
-# Gradle files
+# Tệp module (Gradle mới là nguồn chính)
+*.iml
+
+# Log của Gradle
 gradle-daemon.out
 gradle-daemon.out.*
 
-### Sensitive Information ###
-# Signing keys (DO NOT commit these to your repository)
+### 4. Tệp Nhạy cảm (Chữ ký ứng dụng) ###
+# TUYỆT ĐỐI KHÔNG commit file chữ ký lên repository
 *.jks
 *.keystore
 *.p12
 keystores/
 
-### OS-specific Files (macOS, Windows, Linux) ###
+### 5. Tệp rác của Hệ điều hành ###
+# macOS
 .DS_Store
 .DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
+
+# Windows
 Thumbs.db

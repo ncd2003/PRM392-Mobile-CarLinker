@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Internet permission for API calls -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -10,18 +14,88 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.PRM392MobileCarLinker">
+        android:theme="@style/Theme.PRM392MobileCarLinker"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+
+        <!-- Product List Activity - LAUNCHER -->
         <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.PRM392MobileCarLinker">
+            android:name=".ui.shop.ProductListActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.PRM392MobileCarLinker" />
+
+        <!-- Product Detail Activity -->
+        <activity
+            android:name=".ui.shop.ProductDetailActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.shop.ProductListActivity" />
+
+        <!-- Cart Activity -->
+        <activity
+            android:name=".ui.cart.CartActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.shop.ProductListActivity" />
+
+        <!-- Checkout Activity -->
+        <activity
+            android:name=".ui.checkout.CheckoutActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.cart.CartActivity" />
+
+        <!-- My Orders Activity -->
+        <activity
+            android:name=".ui.order.MyOrdersActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.shop.ProductListActivity" />
+
+        <!-- Order Detail Activity -->
+        <activity
+            android:name=".ui.order.OrderDetailActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.order.MyOrdersActivity" />
+
+        <!-- VNPay Payment Activity -->
+        <activity
+            android:name=".ui.payment.VNPayActivity"
+            android:exported="true"
+            android:parentActivityName=".ui.checkout.CheckoutActivity"
+            android:label="Thanh toán VNPay">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="carlinker" />
+            </intent-filter>
+
+        </activity>
+
+        <activity
+            android:name=".ui.payment.PaymentSuccessActivity"
+            android:exported="false"
+            android:label="Thanh toán thành công" />
+
+        <activity
+            android:name=".ui.payment.PaymentFailedActivity"
+            android:exported="false"
+            android:label="Thanh toán thất bại" />
+
+
+        <!-- Dealer Orders Activity -->
+        <activity
+            android:name=".ui.dealer.DealerOrdersActivity"
+            android:exported="true"
+            android:label="Quản lý đơn hàng" />
+
     </application>
 
 </manifest>

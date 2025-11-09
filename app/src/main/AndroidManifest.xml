@@ -20,7 +20,7 @@
 
         <!-- Product List Activity - LAUNCHER -->
         <activity
-            android:name=".ui.shop.ProductListActivity"
+            android:name=".ui.auth.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,6 +32,11 @@
             android:name=".MainActivity"
             android:exported="false"
             android:theme="@style/Theme.PRM392MobileCarLinker" />
+
+        <activity
+            android:name=".ui.shop.ProductListActivity"
+            android:exported="true"
+            />
 
         <!-- Product Detail Activity -->
         <activity

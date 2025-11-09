@@ -1,5 +1,7 @@
 package com.example.prm392_mobile_carlinker.data.remote;
 
+import com.example.prm392_mobile_carlinker.data.model.auth.LoginRequest;
+import com.example.prm392_mobile_carlinker.data.model.auth.LoginResponse;
 import com.example.prm392_mobile_carlinker.data.model.cart.AddToCartRequest;
 import com.example.prm392_mobile_carlinker.data.model.cart.AddToCartResponse;
 import com.example.prm392_mobile_carlinker.data.model.cart.BaseResponse;
@@ -103,4 +105,8 @@ public interface ApiService {
     // Confirm VNPay payment - Xác nhận thanh toán thành công từ mobile app
     @POST("api/Order/confirm-payment/{orderId}")
     Call<BaseResponse> confirmPayment(@Path("orderId") int orderId);
+
+    // Login user
+    @POST("api/Auth/login")
+    Call<LoginResponse> login(@Body LoginRequest request);
 }

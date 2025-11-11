@@ -15,13 +15,20 @@ import com.example.prm392_mobile_carlinker.data.model.order.UpdateOrderStatusReq
 import com.example.prm392_mobile_carlinker.data.model.payment.VNPayResponse;
 import com.example.prm392_mobile_carlinker.data.model.product.ProductDetailResponse;
 import com.example.prm392_mobile_carlinker.data.model.product.ProductResponse;
+import com.example.prm392_mobile_carlinker.data.model.vehicle.VehicleListResponse;
+import com.example.prm392_mobile_carlinker.data.model.vehicle.VehicleRequest;
+import com.example.prm392_mobile_carlinker.data.model.vehicle.VehicleResponse;
 
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -109,4 +116,40 @@ public interface ApiService {
     // Login user
     @POST("api/Auth/login")
     Call<LoginResponse> login(@Body LoginRequest request);
+
+    // get all vehicles
+    @GET("api/Vehicle/user")
+    Call<VehicleListResponse> getAllVehicles();
+
+    @GET("api/Vehicle/{id}")
+    Call<VehicleResponse> getVehicleById(@Path("id") int id);
+
+    @Multipart
+    @POST("api/Vehicle")
+    Call<VehicleResponse> addVehicle(
+            @Part("licensePlate") RequestBody licensePlate,
+            @Part("fuelType") RequestBody fuelType,
+            @Part("transmissionType") RequestBody transmissionType,
+            @Part("brand") RequestBody brand,
+            @Part("model") RequestBody model,
+            @Part("year") RequestBody year,
+            @Part("image") RequestBody image
+    );
+
+
+    @Multipart
+    @PATCH("api/Vehicle/{id}")
+    Call<VehicleResponse> updateVehicle(
+            @Path("id") int id,
+            @Part("licensePlate") RequestBody licensePlate,
+            @Part("fuelType") RequestBody fuelType,
+            @Part("transmissionType") RequestBody transmissionType,
+            @Part("brand") RequestBody brand,
+            @Part("model") RequestBody model,
+            @Part("year") RequestBody year,
+            @Part("image") RequestBody image
+    );
+    @DELETE("api/Vehicle/{id}")
+    Call<VehicleResponse> deleteVehicle(@Path("id") int id);
 }
+

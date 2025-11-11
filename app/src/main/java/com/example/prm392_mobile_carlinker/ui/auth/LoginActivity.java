@@ -19,6 +19,7 @@ import com.example.prm392_mobile_carlinker.data.model.auth.LoginResponse;
 import com.example.prm392_mobile_carlinker.data.remote.ApiService;
 import com.example.prm392_mobile_carlinker.data.remote.RetrofitClient;
 import com.example.prm392_mobile_carlinker.ui.shop.ProductListActivity;
+import com.example.prm392_mobile_carlinker.ui.vehicle.VehicleListActivity;
 import com.google.android.material.textfield.TextInputEditText;
 
 import retrofit2.Call;
@@ -89,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
                             saveToken(token);
                             Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
                             // Chuyển sang MainActivity (thay bằng activity bạn muốn)
-                            Intent intent = new Intent(LoginActivity.this, ProductListActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, VehicleListActivity.class);
                             // nếu bạn có MainActivity thay vào trên
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);

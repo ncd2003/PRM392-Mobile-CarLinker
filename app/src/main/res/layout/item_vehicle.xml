@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:layout_margin="6dp" android:padding="8dp">
+
+<RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+<TextView android:id="@+id/tvPlate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="BIỂN: ABC-123" android:textStyle="bold"/>
+<TextView android:id="@+id/tvBrandModel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@id/tvPlate" android:text="Brand Model"/>
+<ImageButton android:id="@+id/btnEdit" android:layout_width="36dp" android:layout_height="36dp" android:layout_alignParentEnd="true" android:layout_marginEnd="4dp" android:src="@android:drawable/ic_menu_edit" android:contentDescription="Edit"/>
+<ImageButton android:id="@+id/btnDelete" android:layout_width="36dp" android:layout_height="36dp" android:layout_toStartOf="@id/btnEdit" android:layout_marginEnd="4dp" android:src="@android:drawable/ic_menu_delete" android:contentDescription="Delete"/>
+</RelativeLayout>
+    </androidx.cardview.widget.CardView>

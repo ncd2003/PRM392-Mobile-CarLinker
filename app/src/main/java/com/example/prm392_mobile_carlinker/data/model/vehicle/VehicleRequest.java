@@ -7,17 +7,17 @@ public class VehicleRequest {
     private String brand;
     private String model;
     private int year;
-    private String image;
+    private String imageFile;
 
     public VehicleRequest(String licensePlate, String fuelType, String transmissionType,
-                          String brand, String model, int year, String image) {
+                          String brand, String model, int year, String imageFile) {
         this.licensePlate = licensePlate;
         this.fuelType = fuelType;
         this.transmissionType = transmissionType;
         this.brand = brand;
         this.model = model;
         this.year = year;
-        this.image = image;
+        this.imageFile = imageFile;
     }
 
     public String getLicensePlate() { return licensePlate; }
@@ -26,5 +26,5 @@ public class VehicleRequest {
     public String getBrand() { return brand; }
     public String getModel() { return model; }
     public int getYear() { return year; }
-    public String getImage() { return image; }
+    public String getImageFile() { return imageFile; }
 }

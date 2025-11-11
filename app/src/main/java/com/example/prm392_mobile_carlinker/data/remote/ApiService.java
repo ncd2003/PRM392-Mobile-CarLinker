@@ -19,6 +19,7 @@ import com.example.prm392_mobile_carlinker.data.model.vehicle.VehicleListRespons
 import com.example.prm392_mobile_carlinker.data.model.vehicle.VehicleRequest;
 import com.example.prm392_mobile_carlinker.data.model.vehicle.VehicleResponse;
 
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -133,7 +134,7 @@ public interface ApiService {
             @Part("brand") RequestBody brand,
             @Part("model") RequestBody model,
             @Part("year") RequestBody year,
-            @Part("image") RequestBody image
+            @Part MultipartBody.Part imageFile
     );
 
 
@@ -147,7 +148,7 @@ public interface ApiService {
             @Part("brand") RequestBody brand,
             @Part("model") RequestBody model,
             @Part("year") RequestBody year,
-            @Part("image") RequestBody image
+            @Part MultipartBody.Part imageFile
     );
     @DELETE("api/Vehicle/{id}")
     Call<VehicleResponse> deleteVehicle(@Path("id") int id);

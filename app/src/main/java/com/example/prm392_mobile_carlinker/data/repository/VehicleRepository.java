@@ -1,5 +1,7 @@
 package com.example.prm392_mobile_carlinker.data.repository;
 
+import android.net.Uri;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -9,6 +11,7 @@ import com.example.prm392_mobile_carlinker.data.model.vehicle.VehicleResponse;
 import com.example.prm392_mobile_carlinker.data.remote.ApiService;
 import com.example.prm392_mobile_carlinker.data.remote.RetrofitClient;
 
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -67,26 +70,46 @@ public class VehicleRepository {
 
     public LiveData<Result<VehicleResponse>> addVehicle(VehicleRequest req) {
         MutableLiveData<Result<VehicleResponse>> live = new MutableLiveData<>();
+        live.setValue(Result.loading(null));
 
-        Call<VehicleResponse> call =   apiService.addVehicle(
-                toForm(req.getLicensePlate()),
-                toForm(req.getFuelType()),
-                toForm(req.getTransmissionType()),
-                toForm(req.getBrand()),
-                toForm(req.getModel()),
-                toForm(String.valueOf(req.getYear())),
-                toForm(req.getImage())
+        // Prepare form parts (bảo vệ null)
+        RequestBody rbLicense = toForm(req.getLicensePlate() == null ? "" : req.getLicensePlate());
+        RequestBody rbFuel = toForm(req.getFuelType() == null ? "" : req.getFuelType());
+        RequestBody rbTrans = toForm(req.getTransmissionType() == null ? "" : req.getTransmissionType());
+        RequestBody rbBrand = toForm(req.getBrand() == null ? "" : req.getBrand());
+        RequestBody rbModel = toForm(req.getModel() == null ? "" : req.getModel());
+        RequestBody rbYear = toForm(String.valueOf(req.getYear()));
+
+        // We don't upload file now — backend accepts nullable imageFile, so pass null.
+        MultipartBody.Part imagePart = null;
+
+        Call<VehicleResponse> call = apiService.addVehicle(
+                rbLicense,
+                rbFuel,
+                rbTrans,
+                rbBrand,
+                rbModel,
+                rbYear,
+                imagePart
         );
 
         call.enqueue(new Callback<VehicleResponse>() {
             @Override
             public void onResponse(Call<VehicleResponse> call, Response<VehicleResponse> response) {
-                live.postValue(Result.success(response.body()));
+                if (response.isSuccessful() && response.body() != null) {
+                    live.postValue(Result.success(response.body()));
+                } else {
+                    String err = "Error: " + response.code();
+                    try {
+                        if (response.errorBody() != null) err = response.errorBody().string();
+                    } catch (Exception ignored) {}
+                    live.postValue(Result.error(err, null));
+                }
             }
 
             @Override
             public void onFailure(Call<VehicleResponse> call, Throwable t) {
-                live.postValue(Result.error(t.getMessage(), null));
+                live.postValue(Result.error("Network error: " + t.getMessage(), null));
             }
         });
 
@@ -95,31 +118,52 @@ public class VehicleRepository {
 
     public LiveData<Result<VehicleResponse>> updateVehicle(int id, VehicleRequest req) {
         MutableLiveData<Result<VehicleResponse>> live = new MutableLiveData<>();
+        live.setValue(Result.loading(null));
+
+        // Prepare form parts (bảo vệ null)
+        RequestBody rbLicense = toForm(req.getLicensePlate() == null ? "" : req.getLicensePlate());
+        RequestBody rbFuel = toForm(req.getFuelType() == null ? "" : req.getFuelType());
+        RequestBody rbTrans = toForm(req.getTransmissionType() == null ? "" : req.getTransmissionType());
+        RequestBody rbBrand = toForm(req.getBrand() == null ? "" : req.getBrand());
+        RequestBody rbModel = toForm(req.getModel() == null ? "" : req.getModel());
+        RequestBody rbYear = toForm(String.valueOf(req.getYear()));
+        // Backend update endpoint expects an "Image" string part (for URL) + optional file part
+        RequestBody rbImage = toForm(req.getImageFile() == null ? "" : req.getImageFile());
+
+        // No file upload for now
+        MultipartBody.Part imagePart = null;
 
         apiService.updateVehicle(
                 id,
-                toForm(req.getLicensePlate()),
-                toForm(req.getFuelType()),
-                toForm(req.getTransmissionType()),
-                toForm(req.getBrand()),
-                toForm(req.getModel()),
-                toForm(String.valueOf(req.getYear())),
-                toForm(req.getImage())
+                rbLicense,
+                rbFuel,
+                rbTrans,
+                rbBrand,
+                rbModel,
+                rbYear,
+                imagePart
         ).enqueue(new Callback<VehicleResponse>() {
             @Override
             public void onResponse(Call<VehicleResponse> call, Response<VehicleResponse> response) {
-                live.postValue(Result.success(response.body()));
+                if (response.isSuccessful() && response.body() != null) {
+                    live.postValue(Result.success(response.body()));
+                } else {
+                    String err = "Error: " + response.code();
+                    try {
+                        if (response.errorBody() != null) err = response.errorBody().string();
+                    } catch (Exception ignored) {}
+                    live.postValue(Result.error(err, null));
+                }
             }
 
             @Override
             public void onFailure(Call<VehicleResponse> call, Throwable t) {
-                live.postValue(Result.error(t.getMessage(), null));
+                live.postValue(Result.error("Network error: " + t.getMessage(), null));
             }
         });
 
         return live;
     }
-
 
     public LiveData<Result<VehicleResponse>> deleteVehicle(int id) {
         MutableLiveData<Result<VehicleResponse>> result = new MutableLiveData<>();
@@ -141,3 +185,5 @@ public class VehicleRepository {
         return result;
     }
 }
+
+

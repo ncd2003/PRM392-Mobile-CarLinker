@@ -17,7 +17,7 @@ public class VehicleResponse {
         private String brand;
         private String model;
         private int year;
-        private String imageFile;
+        private String image;
 
         public int getId() { return id; }
         public String getLicensePlate() { return licensePlate; }
@@ -26,6 +26,6 @@ public class VehicleResponse {
         public String getBrand() { return brand; }
         public String getModel() { return model; }
         public int getYear() { return year; }
-        public String getImage() { return imageFile; }
+        public String getImage() { return image; }
     }
 }

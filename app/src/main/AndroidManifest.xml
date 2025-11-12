@@ -37,8 +37,12 @@
         <!-- Product List Activity -->
         <activity
             android:name=".ui.shop.ProductListActivity"
-            android:exported="false"
-            android:parentActivityName=".ui.home.HomeActivity" />
+            android:exported="true"
+            />
+            />
+        <activity android:name=".ui.vehicle.VehicleListActivity" android:exported="true" />
+        <activity android:name=".ui.vehicle.VehicleDetailActivity" android:exported="false" />
+        <activity android:name=".ui.vehicle.VehicleFormActivity" android:exported="false" />
 
         <!-- Product Detail Activity -->
         <activity

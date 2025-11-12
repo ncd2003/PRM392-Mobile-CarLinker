@@ -1,5 +1,7 @@
 package com.example.prm392_mobile_carlinker.data.remote;
 
+import com.example.prm392_mobile_carlinker.data.model.auth.LoginRequest;
+import com.example.prm392_mobile_carlinker.data.model.auth.LoginResponse;
 import com.example.prm392_mobile_carlinker.data.model.cart.AddToCartRequest;
 import com.example.prm392_mobile_carlinker.data.model.cart.AddToCartResponse;
 import com.example.prm392_mobile_carlinker.data.model.cart.BaseResponse;
@@ -20,14 +22,21 @@ import com.example.prm392_mobile_carlinker.data.model.servicecategory.ServiceCat
 import com.example.prm392_mobile_carlinker.data.model.servicecategory.ServiceCategoryResponse;
 import com.example.prm392_mobile_carlinker.data.model.servicecategory.ServiceCategoryUpdateRequest;
 import com.example.prm392_mobile_carlinker.data.model.user.UserResponse;
+import com.example.prm392_mobile_carlinker.data.model.vehicle.VehicleListResponse;
+import com.example.prm392_mobile_carlinker.data.model.vehicle.VehicleRequest;
+import com.example.prm392_mobile_carlinker.data.model.vehicle.VehicleResponse;
 
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.PATCH;
+import retrofit2.http.Multipart;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -161,4 +170,44 @@ public interface ApiService {
     // Get user by id - Lấy thông tin user theo ID
     @GET("api/User/{id}")
     Call<UserResponse> getUserById(@Path("id") int id);
+
+    // Login user
+    @POST("api/Auth/login")
+    Call<LoginResponse> login(@Body LoginRequest request);
+
+    // get all vehicles
+    @GET("api/Vehicle/user")
+    Call<VehicleListResponse> getAllVehicles();
+
+    @GET("api/Vehicle/{id}")
+    Call<VehicleResponse> getVehicleById(@Path("id") int id);
+
+    @Multipart
+    @POST("api/Vehicle")
+    Call<VehicleResponse> addVehicle(
+            @Part("licensePlate") RequestBody licensePlate,
+            @Part("fuelType") RequestBody fuelType,
+            @Part("transmissionType") RequestBody transmissionType,
+            @Part("brand") RequestBody brand,
+            @Part("model") RequestBody model,
+            @Part("year") RequestBody year,
+            @Part("image") RequestBody image
+    );
+
+
+    @Multipart
+    @PATCH("api/Vehicle/{id}")
+    Call<VehicleResponse> updateVehicle(
+            @Path("id") int id,
+            @Part("licensePlate") RequestBody licensePlate,
+            @Part("fuelType") RequestBody fuelType,
+            @Part("transmissionType") RequestBody transmissionType,
+            @Part("brand") RequestBody brand,
+            @Part("model") RequestBody model,
+            @Part("year") RequestBody year,
+            @Part("image") RequestBody image
+    );
+    @DELETE("api/Vehicle/{id}")
+    Call<VehicleResponse> deleteVehicle(@Path("id") int id);
 }
+

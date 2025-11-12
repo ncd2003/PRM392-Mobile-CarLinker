@@ -1,3 +1,39 @@
 <resources>
     <string name="app_name">PRM392-Mobile-CarLinker</string>
+
+    <!-- Home Screen -->
+    <string name="home_title">CarLinker</string>
+    <string name="home_welcome">Chào mừng bạn đến với dịch vụ chăm sóc xe</string>
+    <string name="btn_emergency">🚨 CỨU HỘ NGAY</string>
+    <string name="utilities_title">Tiện Ích</string>
+
+    <!-- Utility Cards -->
+    <string name="card_shop_icon">🛒</string>
+    <string name="card_shop_title">Mua sắm\nlinh kiện</string>
+    <string name="card_booking_icon">📅</string>
+    <string name="card_booking_title">Đặt lịch\ndịch vụ</string>
+    <string name="card_garage_icon">🔧</string>
+    <string name="card_garage_title">Garage\ngần nhất</string>
+    <string name="card_support_icon">💬</string>
+    <string name="card_support_title">Hỗ trợ\nkhách hàng</string>
+
+    <!-- Toast Messages -->
+    <string name="toast_emergency">Đang gửi yêu cầu cứu hộ khẩn cấp…</string>
+    <string name="toast_booking">Chức năng đặt lịch dịch vụ</string>
+    <string name="toast_garage">Chức năng tìm garage gần nhất</string>
+    <string name="toast_support">Chức năng hỗ trợ khách hàng</string>
+
+    <!-- Garage Detail Screen -->
+    <string name="garage_image">Hình ảnh garage</string>
+    <string name="operating_time">Giờ hoạt động</string>
+    <string name="phone_number">Số điện thoại</string>
+    <string name="email">Email</string>
+    <string name="services">Dịch vụ</string>
+    <string name="total_services">%d dịch vụ</string>
+    <string name="no_description">Không có mô tả</string>
+    <string name="no_info">Không có thông tin</string>
+    <string name="error_loading_garage">Lỗi khi tải thông tin garage</string>
+    <string name="error_garage_not_found">Lỗi: Không tìm thấy thông tin garage</string>
+    <string name="no_services">Garage này chưa có dịch vụ nào</string>
+    <string name="btn_emergency_call">🚨 CỨU HỘ NGAY</string>
 </resources>

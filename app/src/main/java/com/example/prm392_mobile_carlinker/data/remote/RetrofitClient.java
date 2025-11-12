@@ -10,19 +10,14 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class RetrofitClient {
 
-    // TODO: Thay đổi URL này thành URL backend thực tế của bạn
-    // URL backend từ launchSettings.json (profile "http" và "https") là http://localhost:5291
-    // Trên trình giả lập Android, localhost được thay thế bằng 10.0.2.2
+    // QUAN TRỌNG: Dùng HTTP thay vì HTTPS để tránh lỗi SSL Certificate
+    // Trên emulator: 10.0.2.2 = localhost của máy host
+    // Trên thiết bị thật: thay bằng IP máy (VD: 192.168.1.100)
     private static final String BASE_URL = "http://10.0.2.2:5291/";
 
-    // LƯU Ý QUAN TRỌNG:
-    // 1. URL này yêu cầu bạn phải thêm 'android:usesCleartextTraffic="true"' vào AndroidManifest.xml
-    // 2. URL này yêu cầu bạn phải VÔ HIỆU HÓA 'app.UseHttpsRedirection();' trong file Program.cs (backend)
-    //
-    // Nếu bạn MUỐN dùng HTTPS (https://10.0.2.2:7151/), bạn sẽ gặp lỗi SSL
-    // vì chứng chỉ dev của .NET không được tin cậy.
+    // Nếu backend chạy trên port khác, thay đổi port ở đây
+    // VD: "http://10.0.2.2:5000/" hoặc "http://10.0.2.2:7151/"
 
-    // Nếu test trên thiết bị thật, dùng IP máy: "http://192.168.x.x:5291/"
 
     private static Retrofit retrofit = null;
 

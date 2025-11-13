@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.example.prm392_mobile_carlinker.R;
 import com.example.prm392_mobile_carlinker.data.model.vehicle.VehicleRequest;
 import com.example.prm392_mobile_carlinker.data.model.vehicle.VehicleResponse;
+import com.example.prm392_mobile_carlinker.data.repository.Resource;
 import com.example.prm392_mobile_carlinker.data.repository.Result;
 import com.example.prm392_mobile_carlinker.data.repository.VehicleRepository;
 import com.google.android.material.textfield.TextInputEditText;
@@ -72,22 +73,32 @@ public class VehicleFormActivity extends AppCompatActivity {
     }
 
     private void loadForEdit() {
-        repository.getVehicleById(vehicleId).observe(this, res -> {
-            if (res == null) return;
-            if (res.status == Result.Status.SUCCESS) {
-                VehicleResponse vr = res.data;
-                if (vr != null && vr.getData() != null) {
-                    VehicleResponse.Data d = vr.getData();
-                    etLicense.setText(d.getLicensePlate());
-                    etBrand.setText(d.getBrand());
-                    etModel.setText(d.getModel());
-                    etYear.setText(String.valueOf(d.getYear()));
-                    etFuel.setText(d.getFuelType());
-                    etTransmission.setText(d.getTransmissionType());
-                    if (d.getImage() != null && !d.getImage().isEmpty()) {
-                        Glide.with(this).load(d.getImage()).into(ivPreview);
+        repository.getVehicleById(vehicleId).observe(this, resource -> {
+            if (resource == null) return;
+
+            switch (resource.getStatus()) {
+                case SUCCESS:
+                    VehicleResponse.Data d = resource.getData();
+                    if (d != null) {
+                        etLicense.setText(d.getLicensePlate());
+                        etBrand.setText(d.getBrand());
+                        etModel.setText(d.getModel());
+                        etYear.setText(String.valueOf(d.getYear()));
+                        etFuel.setText(d.getFuelType());
+                        etTransmission.setText(d.getTransmissionType());
+                        if (d.getImage() != null && !d.getImage().isEmpty()) {
+                            Glide.with(this).load(d.getImage()).into(ivPreview);
+                        }
                     }
-                }
+                    break;
+
+                case ERROR:
+                    Toast.makeText(this, "Lỗi tải dữ liệu: " + resource.getMessage(), Toast.LENGTH_SHORT).show();
+                    break;
+
+                case LOADING:
+                    // Show loading if needed
+                    break;
             }
         });
     }

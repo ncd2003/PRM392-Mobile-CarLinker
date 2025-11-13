@@ -14,6 +14,7 @@ import com.example.prm392_mobile_carlinker.data.remote.RetrofitClient;
 import com.example.prm392_mobile_carlinker.util.FileUtils;
 
 import java.io.File;
+import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -71,42 +72,55 @@ public class VehicleRepository {
         }
     }
 
-    public LiveData<Result<VehicleListResponse>> getAllVehicles() {
-        MutableLiveData<Result<VehicleListResponse>> result = new MutableLiveData<>();
-        result.setValue(Result.loading(null));
+    public LiveData<Resource<List<VehicleResponse.Data>>> getAllVehicles() {
+        MutableLiveData<Resource<List<VehicleResponse.Data>>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading(null));
+
         apiService.getAllVehicles().enqueue(new Callback<VehicleListResponse>() {
             @Override
             public void onResponse(Call<VehicleListResponse> call, Response<VehicleListResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    result.setValue(Result.success(response.body()));
+                    VehicleListResponse vehicleListResponse = response.body();
+                    if (vehicleListResponse.getStatus() == 200 && vehicleListResponse.getData() != null) {
+                        result.setValue(Resource.success(vehicleListResponse.getData()));
+                    } else {
+                        result.setValue(Resource.error("Error: " + vehicleListResponse.getMessage(), null));
+                    }
                 } else {
-                    result.setValue(Result.error("Error: " + response.message(), null));
+                    result.setValue(Resource.error("Error: " + response.message(), null));
                 }
             }
+
             @Override
             public void onFailure(Call<VehicleListResponse> call, Throwable t) {
-                result.setValue(Result.error("Network error: " + t.getMessage(), null));
+                result.setValue(Resource.error("Network error: " + t.getMessage(), null));
             }
         });
         return result;
     }
 
+    public LiveData<Resource<VehicleResponse.Data>> getVehicleById(int id) {
+        MutableLiveData<Resource<VehicleResponse.Data>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading(null));
 
-    public LiveData<Result<VehicleResponse>> getVehicleById(int id) {
-        MutableLiveData<Result<VehicleResponse>> result = new MutableLiveData<>();
-        result.setValue(Result.loading(null));
         apiService.getVehicleById(id).enqueue(new Callback<VehicleResponse>() {
             @Override
             public void onResponse(Call<VehicleResponse> call, Response<VehicleResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    result.setValue(Result.success(response.body()));
+                    VehicleResponse vehicleResponse = response.body();
+                    if (vehicleResponse.getStatus() == 200 && vehicleResponse.getData() != null) {
+                        result.setValue(Resource.success(vehicleResponse.getData()));
+                    } else {
+                        result.setValue(Resource.error("Error: " + vehicleResponse.getMessage(), null));
+                    }
                 } else {
-                    result.setValue(Result.error("Error: " + response.message(), null));
+                    result.setValue(Resource.error("Error: " + response.message(), null));
                 }
             }
+
             @Override
             public void onFailure(Call<VehicleResponse> call, Throwable t) {
-                result.setValue(Result.error("Network error: " + t.getMessage(), null));
+                result.setValue(Resource.error("Network error: " + t.getMessage(), null));
             }
         });
         return result;

@@ -28,13 +28,22 @@ public class RetrofitClient {
     }
 
     /**
-     * Đọc token từ SharedPreferences "app_prefs" với key "auth_token"
-     * (phù hợp với LoginActivity.saveToken hiện tại của bạn)
+     * Đọc token từ SharedPreferences "UserPrefs" với key "authToken"
+     * (phù hợp với SessionManager.createLoginSession)
      */
     private static String getToken() {
-        if (appContext == null) return null;
-        SharedPreferences prefs = appContext.getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
-        return prefs.getString("auth_token", null);
+        if (appContext == null) {
+            android.util.Log.w("RetrofitClient", "appContext is null, cannot get token");
+            return null;
+        }
+        SharedPreferences prefs = appContext.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String token = prefs.getString("authToken", null);
+        if (token != null) {
+            android.util.Log.d("RetrofitClient", "Token found: " + token.substring(0, Math.min(20, token.length())) + "...");
+        } else {
+            android.util.Log.w("RetrofitClient", "No token found in SharedPreferences");
+        }
+        return token;
     }
 
     public static Retrofit getInstance() {

@@ -7,10 +7,15 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    
+
     <!-- Chat Colors -->
-    <color name="colorPrimary">#1976D2</color>
+    <color name="chatPrimary">#1976D2</color>
     <color name="primary">#1976D2</color>
     <color name="primary_dark">#1565C0</color>
     <color name="accent">#FF5722</color>
+
+    <!-- Primary colors for app -->
+    <color name="colorPrimary">#FF9800</color>
+    <color name="colorPrimaryDark">#F57C00</color>
+    <color name="colorAccent">#4CAF50</color>
 </resources>

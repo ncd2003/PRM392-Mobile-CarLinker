@@ -5,11 +5,19 @@
     <!-- Internet permission for API calls -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    
+
     <!-- Storage permissions for file upload -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
+
+    <!-- GPS permissions -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- GPS permissions -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:name=".Application.App"
@@ -22,26 +30,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PRM392MobileCarLinker"
         android:usesCleartextTraffic="true"
+        android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="31">
 
-        <!-- Product List Activity - LAUNCHER -->
+        <!-- Home Activity - LAUNCHER (Màn hình đầu tiên) -->
         <activity
-            android:name=".ui.auth.LoginActivity"
-            android:exported="true">
+            android:name=".ui.home.HomeActivity"
+            android:exported="true"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".MainActivity"
-            android:exported="false"
-            android:theme="@style/Theme.PRM392MobileCarLinker" />
-
+        <!-- Product List Activity -->
         <activity
             android:name=".ui.shop.ProductListActivity"
             android:exported="true"
+            />
+            />
             />
         <activity android:name=".ui.vehicle.VehicleListActivity" android:exported="true" />
         <activity android:name=".ui.vehicle.VehicleDetailActivity" android:exported="false" />
@@ -133,6 +141,83 @@
             android:name=".ui.RoomMembersActivity"
             android:exported="false"
             android:parentActivityName=".ui.chat.ChatActivity" />
+
+        <!-- Garage List Activity -->
+        <activity
+            android:name=".ui.garage.GarageListActivity"
+            android:exported="false"
+            android:label="Garage gần nhất"
+            android:parentActivityName=".ui.home.HomeActivity" />
+
+        <!-- Garage Detail Activity -->
+        <activity
+            android:name=".ui.garage.GarageDetailActivity"
+            android:exported="false"
+            android:label="Chi tiết Garage"
+            android:parentActivityName=".ui.garage.GarageListActivity" />
+
+        <!-- Service Category List Activity -->
+        <activity
+            android:name=".ui.servicecategory.ServiceCategoryListActivity"
+            android:exported="false"
+            android:label="Quản lý Gói Dịch Vụ"
+            android:parentActivityName=".ui.home.HomeActivity" />
+
+        <!-- Service Category Detail Activity -->
+        <activity
+            android:name=".ui.servicecategory.ServiceCategoryDetailActivity"
+            android:exported="false"
+            android:label="Chi tiết Gói Dịch Vụ"
+            android:parentActivityName=".ui.servicecategory.ServiceCategoryListActivity" />
+
+        <!-- Service Category Form Activity -->
+        <activity
+            android:name=".ui.servicecategory.ServiceCategoryFormActivity"
+            android:exported="false"
+            android:label="Thêm/Sửa Gói Dịch Vụ"
+            android:parentActivityName=".ui.servicecategory.ServiceCategoryListActivity" />
+
+        <!-- Service Item List Activity -->
+        <activity
+            android:name=".ui.serviceitem.ServiceItemListActivity"
+            android:exported="false"
+            android:label="Quản lý Dịch Vụ"
+            android:parentActivityName=".ui.home.HomeActivity" />
+
+        <!-- Service Item Detail Activity -->
+        <activity
+            android:name=".ui.serviceitem.ServiceItemDetailActivity"
+            android:exported="false"
+            android:label="Chi tiết Dịch Vụ"
+            android:parentActivityName=".ui.serviceitem.ServiceItemListActivity" />
+
+        <!-- Service Item Form Activity -->
+        <activity
+            android:name=".ui.serviceitem.ServiceItemFormActivity"
+            android:exported="false"
+            android:label="Thêm/Sửa Dịch Vụ"
+            android:parentActivityName=".ui.serviceitem.ServiceItemListActivity" />
+
+        <!-- Service Booking Activity -->
+        <activity
+            android:name=".ui.service.ServiceBookingActivity"
+            android:exported="false"
+            android:label="Đặt Lịch Dịch Vụ"
+            android:parentActivityName=".ui.garage.GarageDetailActivity" />
+
+        <!-- User Info Activity -->
+        <activity
+            android:name=".ui.user.UserInfoActivity"
+            android:exported="false"
+            android:label="Thông tin cá nhân"
+            android:parentActivityName=".ui.home.HomeActivity" />
+
+        <!-- Login Activity -->
+        <activity
+            android:name=".ui.auth.LoginActivity"
+            android:exported="true"
+            android:label="Đăng nhập"
+            android:parentActivityName=".ui.home.HomeActivity" />
 
     </application>
 

@@ -1,6 +1,14 @@
 <resources>
     <string name="app_name">PRM392-Mobile-CarLinker</string>
 
+    <!-- Chat Strings -->
+    <string name="type_message">Type a message…</string>
+    <string name="send_message">Send message</string>
+    <string name="attach_file">Attach file</string>
+    <string name="image_message">Image message</string>
+    <string name="no_messages">No messages</string>
+    <string name="no_chat_rooms">No chat conversations yet</string>
+
     <!-- Home Screen -->
     <string name="home_title">CarLinker</string>
     <string name="home_welcome">Chào mừng bạn đến với dịch vụ chăm sóc xe</string>

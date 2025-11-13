@@ -8,6 +8,18 @@ import com.example.prm392_mobile_carlinker.data.model.cart.BaseResponse;
 import com.example.prm392_mobile_carlinker.data.model.cart.CartResponse;
 import com.example.prm392_mobile_carlinker.data.model.cart.UpdateCartRequest;
 import com.example.prm392_mobile_carlinker.data.model.cart.UpdateCartResponse;
+import com.example.prm392_mobile_carlinker.data.model.chat.ChatApiResponse;
+import com.example.prm392_mobile_carlinker.data.model.chat.ChatMessage;
+import com.example.prm392_mobile_carlinker.data.model.chat.ChatRoom;
+import com.example.prm392_mobile_carlinker.data.model.chat.CreateChatRoomRequest;
+import com.example.prm392_mobile_carlinker.data.model.chat.EditMessageRequest;
+import com.example.prm392_mobile_carlinker.data.model.chat.HideMessageRequest;
+import com.example.prm392_mobile_carlinker.data.model.chat.HideMessageResponse;
+import com.example.prm392_mobile_carlinker.data.model.chat.AddRoomMemberRequest;
+import com.example.prm392_mobile_carlinker.data.model.chat.RoomMember;
+import com.example.prm392_mobile_carlinker.data.model.chat.RemoveMemberResponse;
+import com.example.prm392_mobile_carlinker.data.model.chat.SendMessageRequest;
+import com.example.prm392_mobile_carlinker.data.model.chat.UploadFileResponse;
 import com.example.prm392_mobile_carlinker.data.model.garage.GarageDetailResponse;
 import com.example.prm392_mobile_carlinker.data.model.garage.GarageResponse;
 import com.example.prm392_mobile_carlinker.data.model.order.CreateOrderRequest;
@@ -30,6 +42,9 @@ import com.example.prm392_mobile_carlinker.data.model.user.UserResponse;
 import com.example.prm392_mobile_carlinker.data.model.vehicle.VehicleListResponse;
 import com.example.prm392_mobile_carlinker.data.model.vehicle.VehicleResponse;
 
+import java.util.List;
+
+import okhttp3.MultipartBody;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -243,6 +258,78 @@ public interface ApiService {
     );
     @DELETE("api/Vehicle/{id}")
     Call<VehicleResponse> deleteVehicle(@Path("id") int id);
+
+    // ============== CHAT APIs ==============
+
+    // Upload media file (image/video/document) for chat
+    @Multipart
+    @POST("api/chat/upload")
+    Call<ChatApiResponse<UploadFileResponse>> uploadChatMedia(
+            @Part MultipartBody.Part file,
+            @Part("fileType") RequestBody fileType
+    );
+
+    // Create or get chat room between customer and garage
+    @POST("api/chat/rooms")
+    Call<ChatApiResponse<ChatRoom>> createOrGetChatRoom(@Body CreateChatRoomRequest request);
+
+    // Send message (text or media) in a chat room
+    @POST("api/chat/messages")
+    Call<ChatApiResponse<ChatMessage>> sendMessage(@Body SendMessageRequest request);
+
+    // Get messages from a chat room with pagination
+    @GET("api/chat/rooms/{roomId}/messages")
+    Call<ChatApiResponse<List<ChatMessage>>> getChatMessages(
+            @Path("roomId") long roomId,
+            @Query("page") int page,
+            @Query("pageSize") int pageSize
+    );
+
+    // Get all chat rooms for a customer
+    @GET("api/chat/rooms/customer/{customerId}")
+    Call<ChatApiResponse<List<ChatRoom>>> getCustomerChatRooms(@Path("customerId") int customerId);
+
+    // Get all chat rooms for a garage
+    @GET("api/chat/rooms/garage/{garageId}")
+    Call<ChatApiResponse<List<ChatRoom>>> getGarageChatRooms(@Path("garageId") int garageId);
+
+    // ============== UC-03: Edit / Hide Message APIs ==============
+
+    // Edit message content (only by sender)
+    @PATCH("api/chat/messages/{messageId}/edit")
+    Call<ChatApiResponse<ChatMessage>> editMessage(
+            @Path("messageId") long messageId,
+            @Body EditMessageRequest request
+    );
+
+    // Hide message (soft delete - only by sender)
+    @PATCH("api/chat/messages/{messageId}/hide")
+    Call<ChatApiResponse<HideMessageResponse>> hideMessage(
+            @Path("messageId") long messageId,
+            @Body HideMessageRequest request
+    );
+
+    // ============== UC-04: Room Member Management APIs ==============
+
+    // Get all members of a chat room
+    @GET("api/chat/rooms/{roomId}/members")
+    Call<ChatApiResponse<List<RoomMember>>> getRoomMembers(
+            @Path("roomId") long roomId
+    );
+
+    // Add a member to a chat room
+    @POST("api/chat/rooms/{roomId}/members")
+    Call<ChatApiResponse<RoomMember>> addRoomMember(
+            @Path("roomId") long roomId,
+            @Body AddRoomMemberRequest request
+    );
+
+    // Remove a member from a chat room
+    @DELETE("api/chat/rooms/{roomId}/members/{memberId}")
+    Call<ChatApiResponse<RemoveMemberResponse>> removeRoomMember(
+            @Path("roomId") long roomId,
+            @Path("memberId") long memberId
+    );
 
     // ============== SERVICE RECORD APIs ==============
 

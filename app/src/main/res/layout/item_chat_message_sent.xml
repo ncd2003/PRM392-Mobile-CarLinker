@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <!-- Message Bubble (Right Aligned for Sent) -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:maxWidth="280dp"
+        android:orientation="vertical">
+
+        <!-- Media Container (for images/videos) -->
+        <FrameLayout
+            android:id="@+id/media_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <ImageView
+                android:id="@+id/iv_media"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                android:background="@drawable/bg_message_sent"
+                android:contentDescription="Sent image"
+                tools:src="@drawable/ic_image_placeholder" />
+
+        </FrameLayout>
+
+        <!-- Text Message -->
+        <TextView
+            android:id="@+id/tv_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/bg_message_sent"
+            android:padding="12dp"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            tools:text="Hello, this is a sent message" />
+
+        <!-- Timestamp -->
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="4dp"
+            android:textSize="10sp"
+            android:textColor="@android:color/darker_gray"
+            tools:text="10:30 AM" />
+
+    </LinearLayout>
+
+</LinearLayout>
+

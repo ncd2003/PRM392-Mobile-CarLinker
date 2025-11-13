@@ -15,6 +15,9 @@ import com.example.prm392_mobile_carlinker.data.model.chat.CreateChatRoomRequest
 import com.example.prm392_mobile_carlinker.data.model.chat.EditMessageRequest;
 import com.example.prm392_mobile_carlinker.data.model.chat.HideMessageRequest;
 import com.example.prm392_mobile_carlinker.data.model.chat.HideMessageResponse;
+import com.example.prm392_mobile_carlinker.data.model.chat.AddRoomMemberRequest;
+import com.example.prm392_mobile_carlinker.data.model.chat.RoomMember;
+import com.example.prm392_mobile_carlinker.data.model.chat.RemoveMemberResponse;
 import com.example.prm392_mobile_carlinker.data.model.chat.SendMessageRequest;
 import com.example.prm392_mobile_carlinker.data.model.chat.UploadFileResponse;
 import com.example.prm392_mobile_carlinker.data.model.order.CreateOrderRequest;
@@ -213,6 +216,27 @@ public interface ApiService {
             @Path("messageId") long messageId,
             @Body HideMessageRequest request
     );
-}
 
+    // ============== UC-04: Room Member Management APIs ==============
+
+    // Get all members of a chat room
+    @GET("api/chat/rooms/{roomId}/members")
+    Call<ChatApiResponse<List<RoomMember>>> getRoomMembers(
+            @Path("roomId") long roomId
+    );
+
+    // Add a member to a chat room
+    @POST("api/chat/rooms/{roomId}/members")
+    Call<ChatApiResponse<RoomMember>> addRoomMember(
+            @Path("roomId") long roomId,
+            @Body AddRoomMemberRequest request
+    );
+
+    // Remove a member from a chat room
+    @DELETE("api/chat/rooms/{roomId}/members/{memberId}")
+    Call<ChatApiResponse<RemoveMemberResponse>> removeRoomMember(
+            @Path("roomId") long roomId,
+            @Path("memberId") long memberId
+    );
+}
 

@@ -136,3 +136,58 @@ data class HideMessageResponse(
     @SerializedName("hiddenAt")
     val hiddenAt: String
 )
+
+/**
+ * UC-04: Room Member Models
+ */
+
+/**
+ * Request to add a member to a chat room
+ */
+data class AddRoomMemberRequest(
+    @SerializedName("userId")
+    val userId: Int,
+
+    @SerializedName("userType")
+    val userType: Int // 1=STAFF, 2=ADMIN
+)
+
+/**
+ * Room member response
+ */
+data class RoomMember(
+    @SerializedName("id")
+    val id: Long,
+
+    @SerializedName("roomId")
+    val roomId: Long,
+
+    @SerializedName("userType")
+    val userType: Int, // 1=STAFF, 2=ADMIN
+
+    @SerializedName("userId")
+    val userId: Int,
+
+    @SerializedName("userName")
+    val userName: String,
+
+    @SerializedName("userEmail")
+    val userEmail: String?,
+
+    @SerializedName("joinedAt")
+    val joinedAt: String
+)
+
+/**
+ * Response when removing a member
+ */
+data class RemoveMemberResponse(
+    @SerializedName("memberId")
+    val memberId: Long,
+
+    @SerializedName("roomId")
+    val roomId: Long,
+
+    @SerializedName("removedAt")
+    val removedAt: String
+)

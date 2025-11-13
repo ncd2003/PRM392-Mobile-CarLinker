@@ -419,6 +419,30 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_chat, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(android.view.MenuItem item) {
+        if (item.getItemId() == R.id.action_manage_members) {
+            openRoomMembersActivity();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * UC-04: Open Room Members Activity
+     */
+    private void openRoomMembersActivity() {
+        Intent intent = new Intent(this, com.example.prm392_mobile_carlinker.ui.RoomMembersActivity.class);
+        intent.putExtra("ROOM_ID", roomId);
+        startActivity(intent);
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         

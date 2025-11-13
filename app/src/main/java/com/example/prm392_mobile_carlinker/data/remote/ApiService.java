@@ -142,7 +142,7 @@ public interface ApiService {
             @Part("brand") RequestBody brand,
             @Part("model") RequestBody model,
             @Part("year") RequestBody year,
-            @Part("image") RequestBody image
+            @Part MultipartBody.Part imageFile
     );
 
 
@@ -156,7 +156,7 @@ public interface ApiService {
             @Part("brand") RequestBody brand,
             @Part("model") RequestBody model,
             @Part("year") RequestBody year,
-            @Part("image") RequestBody image
+            @Part MultipartBody.Part imageFile
     );
     @DELETE("api/Vehicle/{id}")
     Call<VehicleResponse> deleteVehicle(@Path("id") int id);

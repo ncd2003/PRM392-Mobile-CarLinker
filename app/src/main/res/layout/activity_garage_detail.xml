@@ -101,7 +101,7 @@
                             android:layout_height="20dp"
                             android:src="@android:drawable/ic_menu_recent_history"
                             android:contentDescription="@string/operating_time"
-                            android:tint="@color/colorPrimary" />
+                            app:tint="@color/colorPrimary" />
 
                         <TextView
                             android:id="@+id/tvOperatingTime"
@@ -126,7 +126,7 @@
                             android:layout_height="20dp"
                             android:src="@android:drawable/ic_menu_call"
                             android:contentDescription="@string/phone_number"
-                            android:tint="@color/colorPrimary" />
+                            app:tint="@color/colorPrimary" />
 
                         <TextView
                             android:id="@+id/tvPhoneNumber"
@@ -150,7 +150,7 @@
                             android:layout_height="20dp"
                             android:src="@android:drawable/ic_dialog_email"
                             android:contentDescription="@string/email"
-                            android:tint="@color/colorPrimary" />
+                            app:tint="@color/colorPrimary" />
 
                         <TextView
                             android:id="@+id/tvEmail"
@@ -248,6 +248,23 @@
             app:iconPadding="8dp"
             app:cornerRadius="8dp"
             android:backgroundTint="@color/colorPrimary"
+            style="@style/Widget.MaterialComponents.Button" />
+
+        <!-- Chat with Garage Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnChatWithGarage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Chat với Garage"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:padding="16dp"
+            app:icon="@android:drawable/ic_menu_send"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:cornerRadius="8dp"
+            android:backgroundTint="@color/colorAccent"
             style="@style/Widget.MaterialComponents.Button" />
 
         <!-- Emergency Call Button -->

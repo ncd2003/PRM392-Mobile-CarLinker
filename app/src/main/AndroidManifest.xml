@@ -110,6 +110,12 @@
             android:exported="true"
             android:label="Quản lý đơn hàng" />
 
+        <!-- Initiate Chat Activity (UC-02) -->
+        <activity
+            android:name=".ui.chat.InitiateChatActivity"
+            android:exported="false"
+            android:label="Start Chat" />
+
         <!-- Chat Room List Activity -->
         <activity
             android:name=".ui.chat.ChatRoomListActivity"

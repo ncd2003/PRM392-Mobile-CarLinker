@@ -5,6 +5,11 @@
     <!-- Internet permission for API calls -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
+    <!-- Storage permissions for file upload -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
 
     <application
         android:allowBackup="true"
@@ -103,6 +108,18 @@
             android:name=".ui.dealer.DealerOrdersActivity"
             android:exported="true"
             android:label="Quản lý đơn hàng" />
+
+        <!-- Chat Room List Activity -->
+        <activity
+            android:name=".ui.chat.ChatRoomListActivity"
+            android:exported="false"
+            android:label="Messages" />
+
+        <!-- Chat Activity -->
+        <activity
+            android:name=".ui.chat.ChatActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.chat.ChatRoomListActivity" />
 
     </application>
 

@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -142,11 +143,46 @@
             android:label="Thêm/Sửa Gói Dịch Vụ"
             android:parentActivityName=".ui.servicecategory.ServiceCategoryListActivity" />
 
+        <!-- Service Item List Activity -->
+        <activity
+            android:name=".ui.serviceitem.ServiceItemListActivity"
+            android:exported="false"
+            android:label="Quản lý Dịch Vụ"
+            android:parentActivityName=".ui.home.HomeActivity" />
+
+        <!-- Service Item Detail Activity -->
+        <activity
+            android:name=".ui.serviceitem.ServiceItemDetailActivity"
+            android:exported="false"
+            android:label="Chi tiết Dịch Vụ"
+            android:parentActivityName=".ui.serviceitem.ServiceItemListActivity" />
+
+        <!-- Service Item Form Activity -->
+        <activity
+            android:name=".ui.serviceitem.ServiceItemFormActivity"
+            android:exported="false"
+            android:label="Thêm/Sửa Dịch Vụ"
+            android:parentActivityName=".ui.serviceitem.ServiceItemListActivity" />
+
+        <!-- Service Booking Activity -->
+        <activity
+            android:name=".ui.service.ServiceBookingActivity"
+            android:exported="false"
+            android:label="Đặt Lịch Dịch Vụ"
+            android:parentActivityName=".ui.garage.GarageDetailActivity" />
+
         <!-- User Info Activity -->
         <activity
             android:name=".ui.user.UserInfoActivity"
             android:exported="false"
             android:label="Thông tin cá nhân"
+            android:parentActivityName=".ui.home.HomeActivity" />
+
+        <!-- Login Activity -->
+        <activity
+            android:name=".ui.auth.LoginActivity"
+            android:exported="true"
+            android:label="Đăng nhập"
             android:parentActivityName=".ui.home.HomeActivity" />
 
     </application>

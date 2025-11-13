@@ -13,21 +13,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 
 import com.example.prm392_mobile_carlinker.R;
+import com.example.prm392_mobile_carlinker.ui.auth.LoginActivity;
 import com.example.prm392_mobile_carlinker.ui.garage.GarageListActivity;
 import com.example.prm392_mobile_carlinker.ui.order.MyOrdersActivity;
 import com.example.prm392_mobile_carlinker.ui.servicecategory.ServiceCategoryListActivity;
 import com.example.prm392_mobile_carlinker.ui.shop.ProductListActivity;
+import com.example.prm392_mobile_carlinker.util.SessionManager;
 import com.google.android.material.card.MaterialCardView;
 
 /**
  * HomeActivity - Màn hình chính của ứng dụng
- * Hiển thị các chức năng chính:
- * - Header với nút profile menu
- * - Nút cứu hộ khẩn cấp
- * - Mua sắm linh kiện
- * - Đặt lịch dịch vụ
- * - Garage gần nhất
- * - Hỗ trợ khách hàng
  */
 public class HomeActivity extends AppCompatActivity {
 
@@ -35,11 +30,16 @@ public class HomeActivity extends AppCompatActivity {
     private FrameLayout cardShop, cardBooking, cardGarage, cardSupport;
     private MaterialCardView btnProfileMenu;
     private TextView tvWelcomeUser;
+    private Button btnLoginPrompt;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        // Initialize session manager
+        sessionManager = new SessionManager(this);
 
         // Khởi tạo các view
         initViews();
@@ -47,8 +47,15 @@ public class HomeActivity extends AppCompatActivity {
         // Thiết lập sự kiện click
         setupClickListeners();
 
-        // Load user info
-        loadUserInfo();
+        // Load user info hoặc hiển thị nút login
+        updateUIBasedOnLoginStatus();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Cập nhật UI mỗi khi quay lại màn hình này
+        updateUIBasedOnLoginStatus();
     }
 
     /**
@@ -62,14 +69,31 @@ public class HomeActivity extends AppCompatActivity {
         cardSupport = findViewById(R.id.card_support);
         btnProfileMenu = findViewById(R.id.btnProfileMenu);
         tvWelcomeUser = findViewById(R.id.tvWelcomeUser);
+        btnLoginPrompt = findViewById(R.id.btnLoginPrompt);
+    }
+
+    /**
+     * Cập nhật UI dựa trên trạng thái login
+     */
+    private void updateUIBasedOnLoginStatus() {
+        if (sessionManager.isLoggedIn()) {
+            // User đã login - hiển thị thông tin user
+            btnProfileMenu.setVisibility(View.VISIBLE);
+            btnLoginPrompt.setVisibility(View.GONE);
+            loadUserInfo();
+        } else {
+            // User chưa login - hiển thị nút đăng nhập
+            btnProfileMenu.setVisibility(View.GONE);
+            btnLoginPrompt.setVisibility(View.VISIBLE);
+            tvWelcomeUser.setText("Xin chào!");
+        }
     }
 
     /**
      * Load thông tin user
      */
     private void loadUserInfo() {
-        // TODO: Load user info from SharedPreferences or API
-        String userName = "Người dùng"; // Get from preferences
+        String userName = sessionManager.getUserName();
         tvWelcomeUser.setText("Xin chào, " + userName + "!");
     }
 
@@ -77,53 +101,29 @@ public class HomeActivity extends AppCompatActivity {
      * Thiết lập sự kiện click cho các nút
      */
     private void setupClickListeners() {
-        // Profile Menu Button
-        btnProfileMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showProfileMenu(v);
-            }
+        // Login Button (khi chưa login)
+        btnLoginPrompt.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+            startActivity(intent);
         });
+
+        // Profile Menu Button (khi đã login)
+        btnProfileMenu.setOnClickListener(v -> showProfileMenu(v));
 
         // Nút cứu hộ khẩn cấp
-        btnEmergency.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                handleEmergency();
-            }
-        });
+        btnEmergency.setOnClickListener(v -> handleEmergency());
 
         // Card Mua sắm linh kiện
-        cardShop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openShop();
-            }
-        });
+        cardShop.setOnClickListener(v -> openShop());
 
         // Card Đặt lịch dịch vụ
-        cardBooking.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openBooking();
-            }
-        });
+        cardBooking.setOnClickListener(v -> openBooking());
 
         // Card Garage gần nhất
-        cardGarage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openNearbyGarage();
-            }
-        });
+        cardGarage.setOnClickListener(v -> openNearbyGarage());
 
         // Card Hỗ trợ khách hàng
-        cardSupport.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openSupport();
-            }
-        });
+        cardSupport.setOnClickListener(v -> openSupport());
     }
 
     /**
@@ -133,33 +133,33 @@ public class HomeActivity extends AppCompatActivity {
         PopupMenu popup = new PopupMenu(this, anchor);
         popup.getMenuInflater().inflate(R.menu.menu_profile, popup.getMenu());
 
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                int itemId = item.getItemId();
+        popup.setOnMenuItemClickListener(item -> {
+            int itemId = item.getItemId();
 
-                if (itemId == R.id.menu_user_info) {
-                    openUserInfo();
-                    return true;
-                } else if (itemId == R.id.menu_vehicle_management) {
-                    openVehicleManagement();
-                    return true;
-                } else if (itemId == R.id.menu_order_history) {
-                    openOrderHistory();
-                    return true;
-                } else if (itemId == R.id.menu_service_category) {
-                    openServiceCategoryManagement();
-                    return true;
-                } else if (itemId == R.id.menu_settings) {
-                    openSettings();
-                    return true;
-                } else if (itemId == R.id.menu_logout) {
-                    handleLogout();
-                    return true;
-                }
-
-                return false;
+            if (itemId == R.id.menu_user_info) {
+                openUserInfo();
+                return true;
+            } else if (itemId == R.id.menu_vehicle_management) {
+                openVehicleManagement();
+                return true;
+            } else if (itemId == R.id.menu_order_history) {
+                openOrderHistory();
+                return true;
+            } else if (itemId == R.id.menu_service_category) {
+                openServiceCategoryManagement();
+                return true;
+            } else if (itemId == R.id.menu_service_item) {
+                openServiceItemManagement();
+                return true;
+            } else if (itemId == R.id.menu_settings) {
+                openSettings();
+                return true;
+            } else if (itemId == R.id.menu_logout) {
+                handleLogout();
+                return true;
             }
+
+            return false;
         });
 
         popup.show();
@@ -170,8 +170,7 @@ public class HomeActivity extends AppCompatActivity {
      */
     private void openUserInfo() {
         Intent intent = new Intent(this, com.example.prm392_mobile_carlinker.ui.user.UserInfoActivity.class);
-        // TODO: Pass actual user ID from SharedPreferences
-        intent.putExtra("USER_ID", 4); // Temporary hardcoded ID
+        intent.putExtra("USER_ID", sessionManager.getUserId());
         startActivity(intent);
     }
 
@@ -179,10 +178,8 @@ public class HomeActivity extends AppCompatActivity {
      * Mở trang quản lý xe
      */
     private void openVehicleManagement() {
-        Toast.makeText(this, "Mở quản lý xe", Toast.LENGTH_SHORT).show();
-        // TODO: Navigate to VehicleManagementActivity
-        // Intent intent = new Intent(this, VehicleManagementActivity.class);
-        // startActivity(intent);
+        Intent intent = new Intent(this, com.example.prm392_mobile_carlinker.ui.vehicle.VehicleListActivity.class);
+        startActivity(intent);
     }
 
     /**
@@ -202,31 +199,33 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     /**
+     * Mở trang quản lý dịch vụ (Admin only)
+     */
+    private void openServiceItemManagement() {
+        Intent intent = new Intent(this, com.example.prm392_mobile_carlinker.ui.serviceitem.ServiceItemListActivity.class);
+        startActivity(intent);
+    }
+
+    /**
      * Mở trang cài đặt
      */
     private void openSettings() {
         Toast.makeText(this, "Mở cài đặt", Toast.LENGTH_SHORT).show();
-        // TODO: Navigate to SettingsActivity
-        // Intent intent = new Intent(this, SettingsActivity.class);
-        // startActivity(intent);
     }
 
     /**
      * Xử lý đăng xuất
      */
     private void handleLogout() {
-        // TODO: Clear user session and navigate to login
+        sessionManager.logout();
         Toast.makeText(this, "Đăng xuất thành công", Toast.LENGTH_SHORT).show();
-        // Clear SharedPreferences
-        // Navigate to LoginActivity
-        // finish();
+        updateUIBasedOnLoginStatus();
     }
 
     /**
      * Xử lý chức năng cứu hộ khẩn cấp
      */
     private void handleEmergency() {
-        // TODO: Implement emergency rescue feature
         Toast.makeText(this, R.string.toast_emergency, Toast.LENGTH_SHORT).show();
     }
 
@@ -242,8 +241,17 @@ public class HomeActivity extends AppCompatActivity {
      * Mở trang đặt lịch dịch vụ
      */
     private void openBooking() {
-        // TODO: Implement booking service feature
-        Toast.makeText(this, R.string.toast_booking, Toast.LENGTH_SHORT).show();
+        // Kiểm tra user đã login chưa
+        if (!sessionManager.isLoggedIn()) {
+            Toast.makeText(this, "Vui lòng đăng nhập để đặt lịch dịch vụ", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            return;
+        }
+
+        // Mở màn hình chọn garage trước
+        Intent intent = new Intent(this, GarageListActivity.class);
+        startActivity(intent);
     }
 
     /**
@@ -258,7 +266,6 @@ public class HomeActivity extends AppCompatActivity {
      * Mở trang hỗ trợ khách hàng
      */
     private void openSupport() {
-        // TODO: Implement customer support feature
         Toast.makeText(this, R.string.toast_support, Toast.LENGTH_SHORT).show();
     }
 }

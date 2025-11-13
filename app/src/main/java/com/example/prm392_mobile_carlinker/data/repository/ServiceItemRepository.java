@@ -4,11 +4,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.prm392_mobile_carlinker.data.model.cart.BaseResponse;
-import com.example.prm392_mobile_carlinker.data.model.servicecategory.ServiceCategory;
-import com.example.prm392_mobile_carlinker.data.model.servicecategory.ServiceCategoryCreateRequest;
-import com.example.prm392_mobile_carlinker.data.model.servicecategory.ServiceCategoryDetailResponse;
-import com.example.prm392_mobile_carlinker.data.model.servicecategory.ServiceCategoryResponse;
-import com.example.prm392_mobile_carlinker.data.model.servicecategory.ServiceCategoryUpdateRequest;
+import com.example.prm392_mobile_carlinker.data.model.serviceitem.ServiceItemCreateRequest;
+import com.example.prm392_mobile_carlinker.data.model.serviceitem.ServiceItemDetailResponse;
+import com.example.prm392_mobile_carlinker.data.model.serviceitem.ServiceItemDto;
+import com.example.prm392_mobile_carlinker.data.model.serviceitem.ServiceItemResponse;
+import com.example.prm392_mobile_carlinker.data.model.serviceitem.ServiceItemUpdateRequest;
 import com.example.prm392_mobile_carlinker.data.remote.ApiService;
 import com.example.prm392_mobile_carlinker.data.remote.RetrofitClient;
 
@@ -18,29 +18,29 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ServiceCategoryRepository {
+public class ServiceItemRepository {
     private ApiService apiService;
 
-    public ServiceCategoryRepository() {
+    public ServiceItemRepository() {
         this.apiService = RetrofitClient.getApiService();
     }
 
-    // Get all service categories
-    public LiveData<Resource<List<ServiceCategory>>> getAllServiceCategories(int page, int size, String sortBy, boolean isAsc) {
-        MutableLiveData<Resource<List<ServiceCategory>>> result = new MutableLiveData<>();
+    // Get all service items
+    public LiveData<Resource<List<ServiceItemDto>>> getAllServiceItems(int page, int size, String sortBy, boolean isAsc) {
+        MutableLiveData<Resource<List<ServiceItemDto>>> result = new MutableLiveData<>();
         result.setValue(Resource.loading(null));
 
-        apiService.getAllServiceCategories(page, size, sortBy, isAsc).enqueue(new Callback<ServiceCategoryResponse>() {
+        apiService.getAllServiceItems(page, size, sortBy, isAsc).enqueue(new Callback<ServiceItemResponse>() {
             @Override
-            public void onResponse(Call<ServiceCategoryResponse> call, Response<ServiceCategoryResponse> response) {
+            public void onResponse(Call<ServiceItemResponse> call, Response<ServiceItemResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    ServiceCategoryResponse serviceCategoryResponse = response.body();
-                    if (serviceCategoryResponse.getStatus() == 200 && serviceCategoryResponse.getData() != null) {
+                    ServiceItemResponse serviceItemResponse = response.body();
+                    if (serviceItemResponse.getStatus() == 200 && serviceItemResponse.getData() != null) {
                         // Extract items array from paginated data
-                        List<ServiceCategory> items = serviceCategoryResponse.getData().getItems();
+                        List<ServiceItemDto> items = serviceItemResponse.getData().getItems();
                         result.setValue(Resource.success(items));
                     } else {
-                        result.setValue(Resource.error("Error: " + serviceCategoryResponse.getMessage(), null));
+                        result.setValue(Resource.error("Error: " + serviceItemResponse.getMessage(), null));
                     }
                 } else {
                     result.setValue(Resource.error("Error: " + response.message(), null));
@@ -48,7 +48,7 @@ public class ServiceCategoryRepository {
             }
 
             @Override
-            public void onFailure(Call<ServiceCategoryResponse> call, Throwable t) {
+            public void onFailure(Call<ServiceItemResponse> call, Throwable t) {
                 result.setValue(Resource.error("Network error: " + t.getMessage(), null));
             }
         });
@@ -56,16 +56,16 @@ public class ServiceCategoryRepository {
         return result;
     }
 
-    // Get service category by id
-    public LiveData<Resource<ServiceCategory>> getServiceCategoryById(int id) {
-        MutableLiveData<Resource<ServiceCategory>> result = new MutableLiveData<>();
+    // Get service item by id
+    public LiveData<Resource<ServiceItemDto>> getServiceItemById(int id) {
+        MutableLiveData<Resource<ServiceItemDto>> result = new MutableLiveData<>();
         result.setValue(Resource.loading(null));
 
-        apiService.getServiceCategoryById(id).enqueue(new Callback<ServiceCategoryDetailResponse>() {
+        apiService.getServiceItemById(id).enqueue(new Callback<ServiceItemDetailResponse>() {
             @Override
-            public void onResponse(Call<ServiceCategoryDetailResponse> call, Response<ServiceCategoryDetailResponse> response) {
+            public void onResponse(Call<ServiceItemDetailResponse> call, Response<ServiceItemDetailResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    ServiceCategoryDetailResponse detailResponse = response.body();
+                    ServiceItemDetailResponse detailResponse = response.body();
                     if (detailResponse.getStatus() == 200 && detailResponse.getData() != null) {
                         result.setValue(Resource.success(detailResponse.getData()));
                     } else {
@@ -77,7 +77,7 @@ public class ServiceCategoryRepository {
             }
 
             @Override
-            public void onFailure(Call<ServiceCategoryDetailResponse> call, Throwable t) {
+            public void onFailure(Call<ServiceItemDetailResponse> call, Throwable t) {
                 result.setValue(Resource.error("Network error: " + t.getMessage(), null));
             }
         });
@@ -85,16 +85,16 @@ public class ServiceCategoryRepository {
         return result;
     }
 
-    // Create service category
-    public LiveData<Resource<ServiceCategory>> createServiceCategory(ServiceCategoryCreateRequest request) {
-        MutableLiveData<Resource<ServiceCategory>> result = new MutableLiveData<>();
+    // Create service item
+    public LiveData<Resource<ServiceItemDto>> createServiceItem(ServiceItemCreateRequest request) {
+        MutableLiveData<Resource<ServiceItemDto>> result = new MutableLiveData<>();
         result.setValue(Resource.loading(null));
 
-        apiService.createServiceCategory(request).enqueue(new Callback<ServiceCategoryDetailResponse>() {
+        apiService.createServiceItem(request).enqueue(new Callback<ServiceItemDetailResponse>() {
             @Override
-            public void onResponse(Call<ServiceCategoryDetailResponse> call, Response<ServiceCategoryDetailResponse> response) {
+            public void onResponse(Call<ServiceItemDetailResponse> call, Response<ServiceItemDetailResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    ServiceCategoryDetailResponse detailResponse = response.body();
+                    ServiceItemDetailResponse detailResponse = response.body();
                     if (detailResponse.getStatus() == 201 && detailResponse.getData() != null) {
                         result.setValue(Resource.success(detailResponse.getData()));
                     } else {
@@ -106,7 +106,7 @@ public class ServiceCategoryRepository {
             }
 
             @Override
-            public void onFailure(Call<ServiceCategoryDetailResponse> call, Throwable t) {
+            public void onFailure(Call<ServiceItemDetailResponse> call, Throwable t) {
                 result.setValue(Resource.error("Network error: " + t.getMessage(), null));
             }
         });
@@ -114,16 +114,16 @@ public class ServiceCategoryRepository {
         return result;
     }
 
-    // Update service category
-    public LiveData<Resource<ServiceCategory>> updateServiceCategory(int id, ServiceCategoryUpdateRequest request) {
-        MutableLiveData<Resource<ServiceCategory>> result = new MutableLiveData<>();
+    // Update service item
+    public LiveData<Resource<ServiceItemDto>> updateServiceItem(int id, ServiceItemUpdateRequest request) {
+        MutableLiveData<Resource<ServiceItemDto>> result = new MutableLiveData<>();
         result.setValue(Resource.loading(null));
 
-        apiService.updateServiceCategory(id, request).enqueue(new Callback<ServiceCategoryDetailResponse>() {
+        apiService.updateServiceItem(id, request).enqueue(new Callback<ServiceItemDetailResponse>() {
             @Override
-            public void onResponse(Call<ServiceCategoryDetailResponse> call, Response<ServiceCategoryDetailResponse> response) {
+            public void onResponse(Call<ServiceItemDetailResponse> call, Response<ServiceItemDetailResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    ServiceCategoryDetailResponse detailResponse = response.body();
+                    ServiceItemDetailResponse detailResponse = response.body();
                     if (detailResponse.getStatus() == 200 && detailResponse.getData() != null) {
                         result.setValue(Resource.success(detailResponse.getData()));
                     } else {
@@ -135,7 +135,7 @@ public class ServiceCategoryRepository {
             }
 
             @Override
-            public void onFailure(Call<ServiceCategoryDetailResponse> call, Throwable t) {
+            public void onFailure(Call<ServiceItemDetailResponse> call, Throwable t) {
                 result.setValue(Resource.error("Network error: " + t.getMessage(), null));
             }
         });
@@ -143,12 +143,12 @@ public class ServiceCategoryRepository {
         return result;
     }
 
-    // Delete service category
-    public LiveData<Resource<String>> deleteServiceCategory(int id) {
+    // Delete service item
+    public LiveData<Resource<String>> deleteServiceItem(int id) {
         MutableLiveData<Resource<String>> result = new MutableLiveData<>();
         result.setValue(Resource.loading(null));
 
-        apiService.deleteServiceCategory(id).enqueue(new Callback<BaseResponse>() {
+        apiService.deleteServiceItem(id).enqueue(new Callback<BaseResponse>() {
             @Override
             public void onResponse(Call<BaseResponse> call, Response<BaseResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {

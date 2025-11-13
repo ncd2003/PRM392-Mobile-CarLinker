@@ -1,14 +1,14 @@
-package com.example.prm392_mobile_carlinker.data.model.servicecategory;
+package com.example.prm392_mobile_carlinker.data.model.serviceitem;
 
-public class ServiceCategoryResponse {
+public class ServiceItemDetailResponse {
     private int status;
     private String message;
-    private ServiceCategoryPaginatedData data;
+    private ServiceItemDto data;
 
-    public ServiceCategoryResponse() {
+    public ServiceItemDetailResponse() {
     }
 
-    public ServiceCategoryResponse(int status, String message, ServiceCategoryPaginatedData data) {
+    public ServiceItemDetailResponse(int status, String message, ServiceItemDto data) {
         this.status = status;
         this.message = message;
         this.data = data;
@@ -30,11 +30,11 @@ public class ServiceCategoryResponse {
         this.message = message;
     }
 
-    public ServiceCategoryPaginatedData getData() {
+    public ServiceItemDto getData() {
         return data;
     }
 
-    public void setData(ServiceCategoryPaginatedData data) {
+    public void setData(ServiceItemDto data) {
         this.data = data;
     }
 }

@@ -19,7 +19,12 @@
     <item
         android:id="@+id/menu_service_category"
         android:icon="@android:drawable/ic_menu_manage"
-        android:title="Quản lý dịch vụ (Admin)" />
+        android:title="Quản lý Gói Dịch Vụ (Admin)" />
+
+    <item
+        android:id="@+id/menu_service_item"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="Quản lý Dịch Vụ (Admin)" />
 
     <item
         android:id="@+id/menu_settings"
@@ -32,4 +37,3 @@
         android:title="Đăng xuất" />
 
 </menu>
-

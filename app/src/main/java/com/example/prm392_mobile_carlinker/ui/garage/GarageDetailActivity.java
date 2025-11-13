@@ -46,6 +46,7 @@ public class GarageDetailActivity extends AppCompatActivity {
     private RecyclerView rvServiceCategories;
     private ProgressBar progressBar;
     private MaterialButton btnEmergencyCall;
+    private MaterialButton btnBookService;
 
     private int garageId;
     private String garagePhoneNumber;
@@ -83,6 +84,7 @@ public class GarageDetailActivity extends AppCompatActivity {
         rvServiceCategories = findViewById(R.id.rvServiceCategories);
         progressBar = findViewById(R.id.progressBar);
         btnEmergencyCall = findViewById(R.id.btnEmergencyCall);
+        btnBookService = findViewById(R.id.btnBookService);
     }
 
     private void setupToolbar() {
@@ -193,6 +195,13 @@ public class GarageDetailActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(this, "Không có số điện thoại để gọi", Toast.LENGTH_SHORT).show();
             }
+        });
+
+        // Setup book service button
+        btnBookService.setOnClickListener(v -> {
+            Intent intent = new Intent(this, com.example.prm392_mobile_carlinker.ui.service.ServiceBookingActivity.class);
+            intent.putExtra("GARAGE_ID", garageId);
+            startActivity(intent);
         });
     }
 

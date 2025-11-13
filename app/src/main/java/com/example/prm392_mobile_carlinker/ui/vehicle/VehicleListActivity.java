@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.prm392_mobile_carlinker.R;
 import com.example.prm392_mobile_carlinker.data.model.vehicle.VehicleResponse;
-import com.example.prm392_mobile_carlinker.data.repository.Result;
+import com.example.prm392_mobile_carlinker.data.repository.Resource;
 import com.example.prm392_mobile_carlinker.data.repository.VehicleRepository;
 import com.example.prm392_mobile_carlinker.ui.adapter.VehicleAdapter;
 
@@ -46,15 +46,22 @@ public class VehicleListActivity extends AppCompatActivity implements VehicleAda
     }
 
     private void loadVehicles() {
-        repository.getAllVehicles().observe(this, res -> {
-            if (res == null) return;
-            if (res.status == Result.Status.LOADING) {
-                // show loading if you want
-            } else if (res.status == Result.Status.SUCCESS) {
-                List<VehicleResponse.Data> list = res.data != null ? res.data.getData() : null;
-                adapter.setList(list);
-            } else {
-                Toast.makeText(this, res.message, Toast.LENGTH_LONG).show();
+        repository.getAllVehicles().observe(this, resource -> {
+            if (resource == null) return;
+
+            switch (resource.getStatus()) {
+                case LOADING:
+                    // show loading if you want
+                    break;
+
+                case SUCCESS:
+                    List<VehicleResponse.Data> list = resource.getData();
+                    adapter.setList(list);
+                    break;
+
+                case ERROR:
+                    Toast.makeText(this, resource.getMessage(), Toast.LENGTH_LONG).show();
+                    break;
             }
         });
     }
@@ -75,12 +82,13 @@ public class VehicleListActivity extends AppCompatActivity implements VehicleAda
 
     @Override
     public void onDelete(VehicleResponse.Data vehicle) {
+        // Note: deleteVehicle still returns Result, need to keep it as is or update VehicleRepository
         repository.deleteVehicle(vehicle.getId()).observe(this, res -> {
             if (res == null) return;
-            if (res.status == Result.Status.SUCCESS) {
+            if (res.status == com.example.prm392_mobile_carlinker.data.repository.Result.Status.SUCCESS) {
                 Toast.makeText(this, "Xoá thành công", Toast.LENGTH_SHORT).show();
                 loadVehicles();
-            } else if (res.status == Result.Status.ERROR) {
+            } else if (res.status == com.example.prm392_mobile_carlinker.data.repository.Result.Status.ERROR) {
                 Toast.makeText(this, res.message, Toast.LENGTH_LONG).show();
             }
         });

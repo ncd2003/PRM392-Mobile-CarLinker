@@ -50,7 +50,7 @@
                         android:textColor="#666666"/>
                 </LinearLayout>
 
-                <!-- Profile Button tròn bên phải -->
+                <!-- Profile Button tròn bên phải (khi đã login) -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/btnProfileMenu"
                     android:layout_width="48dp"
@@ -61,15 +61,29 @@
                     app:cardElevation="2dp"
                     android:clickable="true"
                     android:focusable="true"
-                    app:cardBackgroundColor="#6200EE">
+                    app:cardBackgroundColor="#6200EE"
+                    android:visibility="gone">
 
                     <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:padding="12dp"
                         android:src="@android:drawable/ic_menu_manage"
-                        android:tint="@android:color/white"/>
+                        app:tint="@android:color/white" />
                 </com.google.android.material.card.MaterialCardView>
+
+                <!-- Login Button (khi chưa login) -->
+                <Button
+                    android:id="@+id/btnLoginPrompt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:text="Đăng nhập"
+                    android:textSize="14sp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:visibility="gone" />
 
             </RelativeLayout>
         </androidx.cardview.widget.CardView>

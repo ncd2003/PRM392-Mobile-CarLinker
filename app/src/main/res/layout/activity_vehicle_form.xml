@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <!-- Biển số -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -21,6 +22,7 @@
                 android:hint="Biển số" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Hãng -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -32,6 +34,7 @@
                 android:hint="Hãng" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Mẫu -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -43,6 +46,7 @@
                 android:hint="Mẫu" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Năm -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -55,6 +59,7 @@
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Nhiên liệu -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -66,6 +71,7 @@
                 android:hint="Loại nhiên liệu" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Hộp số -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -77,23 +83,34 @@
                 android:hint="Hộp số" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
+        <!-- Nút chọn ảnh -->
+        <Button
+            android:id="@+id/btnSelectImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etImage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Image URL"
-                android:inputType="textUri" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:text="Chọn ảnh xe"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@color/purple_500"
+            android:textColor="@android:color/white" />
 
+        <!-- Preview ảnh -->
+        <ImageView
+            android:id="@+id/ivPreview"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="12dp"
+            android:scaleType="centerCrop"
+            android:background="@drawable/image_placeholder_bg"
+            android:contentDescription="Xem trước ảnh xe" />
+
+        <!-- Nút lưu -->
         <Button
             android:id="@+id/btnSave"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Lưu"
-            android:layout_marginTop="12dp" />
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/teal_700"
+            android:textColor="@android:color/white" />
     </LinearLayout>
 </ScrollView>

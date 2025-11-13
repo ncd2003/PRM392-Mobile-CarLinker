@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="6dp"
+    app:cardElevation="4dp"
+    app:cardCornerRadius="8dp"
+    android:foreground="?attr/selectableItemBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/tvServiceRecordId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="#123"
+                android:textStyle="bold"
+                android:layout_marginEnd="8dp"/>
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trạng thái: Đang xử lý"
+                android:textColor="?android:attr/textColorSecondary" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvVehicle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Xe: ABC-123 - Toyota Camry"
+            android:layout_marginTop="6dp"/>
+
+        <TextView
+            android:id="@+id/tvPeriod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Từ 2025-11-11 08:00 đến 2025-11-11 10:00"
+            android:layout_marginTop="4dp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="13sp"/>
+
+        <TextView
+            android:id="@+id/tvTotalCost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tổng: 1,000,000 ₫"
+            android:layout_marginTop="8dp"
+            android:textStyle="bold"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:gravity="end">
+
+            <ImageButton
+                android:id="@+id/btnEdit"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@android:drawable/ic_menu_edit"
+                android:contentDescription="Sửa" />
+
+            <ImageButton
+                android:id="@+id/btnDelete"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@android:drawable/ic_menu_delete"
+                android:contentDescription="Xóa"
+                android:layout_marginStart="8dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

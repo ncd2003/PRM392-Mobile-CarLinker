@@ -79,6 +79,7 @@ public class ChatRepository {
 
     /**
      * Create or get a chat room between customer and garage
+     * UC02: This is the main method for initiating a chat with a garage
      */
     public LiveData<Result<ChatRoom>> createOrGetChatRoom(int garageId, int customerId) {
         MutableLiveData<Result<ChatRoom>> result = new MutableLiveData<>();
@@ -235,11 +236,11 @@ public class ChatRepository {
     }
 
     /**
-     * Helper method to determine MIME type based on file and file type
+     * Helper method to determine MIME type from file and type
      */
     private String getMimeType(File file, int fileType) {
         String extension = getFileExtension(file.getName()).toLowerCase();
-        
+
         switch (fileType) {
             case 0: // IMAGE
                 switch (extension) {
@@ -259,14 +260,12 @@ public class ChatRepository {
                 switch (extension) {
                     case "mp4":
                         return "video/mp4";
-                    case "mov":
-                        return "video/quicktime";
                     case "avi":
                         return "video/x-msvideo";
-                    case "mkv":
-                        return "video/x-matroska";
-                    case "webm":
-                        return "video/webm";
+                    case "mov":
+                        return "video/quicktime";
+                    case "wmv":
+                        return "video/x-ms-wmv";
                     default:
                         return "video/*";
                 }
@@ -305,3 +304,4 @@ public class ChatRepository {
         return "";
     }
 }
+

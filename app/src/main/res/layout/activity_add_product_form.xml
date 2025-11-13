@@ -5,19 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    tools:context=".ui.managerproduct.ManagerProductListActivity">
+    tools:context=".ui.managerproduct.AddProductActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar_add_product"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:title="Thêm Sản Phẩm Mới"
-            app:navigationIcon="@drawable/ic_arrow_back_24" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -46,17 +40,6 @@
 
             <Spinner
                 android:id="@+id/spinner_category"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Nhà sản xuất (*)"
-                android:layout_marginTop="16dp" />
-
-            <Spinner
-                android:id="@+id/spinner_manufacturer"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 />
@@ -103,29 +86,6 @@
                     android:inputType="number"
                     android:text="0" />
             </com.google.android.material.textfield.TextInputLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="16dp"
-                android:gravity="center_vertical">
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/switch_is_featured"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:text="Sản phẩm nổi bật"
-                    android:checked="false" />
-
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/switch_is_active"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:text="Đang hoạt động"
-                    android:checked="true" />
-            </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"

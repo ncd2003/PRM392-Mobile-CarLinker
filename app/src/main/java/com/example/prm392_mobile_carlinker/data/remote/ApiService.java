@@ -2,6 +2,7 @@ package com.example.prm392_mobile_carlinker.data.remote;
 
 import com.example.prm392_mobile_carlinker.data.model.auth.LoginRequest;
 import com.example.prm392_mobile_carlinker.data.model.auth.LoginResponse;
+import com.example.prm392_mobile_carlinker.data.model.brand.BrandResponse;
 import com.example.prm392_mobile_carlinker.data.model.cart.AddToCartRequest;
 import com.example.prm392_mobile_carlinker.data.model.cart.AddToCartResponse;
 import com.example.prm392_mobile_carlinker.data.model.cart.BaseResponse;
@@ -18,6 +19,7 @@ import com.example.prm392_mobile_carlinker.data.model.product.ProductResponse;
 import com.example.prm392_mobile_carlinker.data.model.vehicle.VehicleListResponse;
 import com.example.prm392_mobile_carlinker.data.model.vehicle.VehicleRequest;
 import com.example.prm392_mobile_carlinker.data.model.vehicle.VehicleResponse;
+import com.example.prm392_mobile_carlinker.data.model.category.CategoryResponse;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -152,5 +154,12 @@ public interface ApiService {
     );
     @DELETE("api/Vehicle/{id}")
     Call<VehicleResponse> deleteVehicle(@Path("id") int id);
+
+    // get all Category
+    @GET("api/Category")
+    Call<CategoryResponse> getAllCategory();
+
+    @GET("api/Brand")
+    Call<BrandResponse> getAllBrand();
 }
 

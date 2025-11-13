@@ -104,6 +104,15 @@
             android:name=".ui.dealer.DealerOrdersActivity"
             android:exported="true"
             android:label="Quản lý đơn hàng" />
+        <activity
+            android:name=".ui.managerproduct.ManagerProductListActivity"
+            android:exported="true"
+            android:label="Quản lý sản phẩm" />
+
+        <activity
+            android:name=".ui.managerproduct.AddProductActivity"
+            android:exported="true"
+            android:label="Thêm sản phẩm" />
 
     </application>
 

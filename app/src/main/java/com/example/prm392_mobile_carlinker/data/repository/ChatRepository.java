@@ -10,6 +10,9 @@ import com.example.prm392_mobile_carlinker.data.model.chat.CreateChatRoomRequest
 import com.example.prm392_mobile_carlinker.data.model.chat.EditMessageRequest;
 import com.example.prm392_mobile_carlinker.data.model.chat.HideMessageRequest;
 import com.example.prm392_mobile_carlinker.data.model.chat.HideMessageResponse;
+import com.example.prm392_mobile_carlinker.data.model.chat.AddRoomMemberRequest;
+import com.example.prm392_mobile_carlinker.data.model.chat.RoomMember;
+import com.example.prm392_mobile_carlinker.data.model.chat.RemoveMemberResponse;
 import com.example.prm392_mobile_carlinker.data.model.chat.SendMessageRequest;
 import com.example.prm392_mobile_carlinker.data.model.chat.UploadFileResponse;
 import com.example.prm392_mobile_carlinker.data.remote.ApiService;
@@ -393,6 +396,125 @@ public class ChatRepository {
 
             @Override
             public void onFailure(Call<ChatApiResponse<HideMessageResponse>> call, Throwable t) {
+                result.setValue(Result.error("Network error: " + t.getMessage(), null));
+            }
+        });
+
+        return result;
+    }
+
+    /**
+     * UC-04: Get all members of a chat room
+     * @param roomId The ID of the chat room
+     */
+    public LiveData<Result<List<RoomMember>>> getRoomMembers(long roomId) {
+        MutableLiveData<Result<List<RoomMember>>> result = new MutableLiveData<>();
+        result.setValue(Result.loading(null));
+
+        apiService.getRoomMembers(roomId).enqueue(new Callback<ChatApiResponse<List<RoomMember>>>() {
+            @Override
+            public void onResponse(Call<ChatApiResponse<List<RoomMember>>> call, Response<ChatApiResponse<List<RoomMember>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ChatApiResponse<List<RoomMember>> apiResponse = response.body();
+                    if (apiResponse.getStatus() == 200 && apiResponse.getData() != null) {
+                        result.setValue(Result.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(Result.error(apiResponse.getMessage(), null));
+                    }
+                } else {
+                    if (response.code() == 404) {
+                        result.setValue(Result.error("Chat room not found", null));
+                    } else {
+                        result.setValue(Result.error("Failed to get room members: " + response.message(), null));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ChatApiResponse<List<RoomMember>>> call, Throwable t) {
+                result.setValue(Result.error("Network error: " + t.getMessage(), null));
+            }
+        });
+
+        return result;
+    }
+
+    /**
+     * UC-04: Add a member to a chat room
+     * @param roomId The ID of the chat room
+     * @param userId The ID of the user to add
+     * @param userType The type of user (1=STAFF, 2=ADMIN)
+     */
+    public LiveData<Result<RoomMember>> addRoomMember(long roomId, int userId, int userType) {
+        MutableLiveData<Result<RoomMember>> result = new MutableLiveData<>();
+        result.setValue(Result.loading(null));
+
+        AddRoomMemberRequest request = new AddRoomMemberRequest(userId, userType);
+
+        apiService.addRoomMember(roomId, request).enqueue(new Callback<ChatApiResponse<RoomMember>>() {
+            @Override
+            public void onResponse(Call<ChatApiResponse<RoomMember>> call, Response<ChatApiResponse<RoomMember>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ChatApiResponse<RoomMember> apiResponse = response.body();
+                    if (apiResponse.getStatus() == 200 && apiResponse.getData() != null) {
+                        result.setValue(Result.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(Result.error(apiResponse.getMessage(), null));
+                    }
+                } else {
+                    // Handle HTTP error responses
+                    if (response.code() == 400) {
+                        result.setValue(Result.error("Cannot add member. Check if user belongs to the same garage or is already a member.", null));
+                    } else if (response.code() == 404) {
+                        result.setValue(Result.error("Room or user not found", null));
+                    } else {
+                        result.setValue(Result.error("Failed to add member: " + response.message(), null));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ChatApiResponse<RoomMember>> call, Throwable t) {
+                result.setValue(Result.error("Network error: " + t.getMessage(), null));
+            }
+        });
+
+        return result;
+    }
+
+    /**
+     * UC-04: Remove a member from a chat room
+     * @param roomId The ID of the chat room
+     * @param memberId The ID of the member to remove
+     */
+    public LiveData<Result<RemoveMemberResponse>> removeRoomMember(long roomId, long memberId) {
+        MutableLiveData<Result<RemoveMemberResponse>> result = new MutableLiveData<>();
+        result.setValue(Result.loading(null));
+
+        apiService.removeRoomMember(roomId, memberId).enqueue(new Callback<ChatApiResponse<RemoveMemberResponse>>() {
+            @Override
+            public void onResponse(Call<ChatApiResponse<RemoveMemberResponse>> call, Response<ChatApiResponse<RemoveMemberResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ChatApiResponse<RemoveMemberResponse> apiResponse = response.body();
+                    if (apiResponse.getStatus() == 200 && apiResponse.getData() != null) {
+                        result.setValue(Result.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(Result.error(apiResponse.getMessage(), null));
+                    }
+                } else {
+                    // Handle HTTP error responses
+                    if (response.code() == 400) {
+                        result.setValue(Result.error("Member does not belong to this chat room", null));
+                    } else if (response.code() == 404) {
+                        result.setValue(Result.error("Room or member not found", null));
+                    } else {
+                        result.setValue(Result.error("Failed to remove member: " + response.message(), null));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ChatApiResponse<RemoveMemberResponse>> call, Throwable t) {
                 result.setValue(Result.error("Network error: " + t.getMessage(), null));
             }
         });

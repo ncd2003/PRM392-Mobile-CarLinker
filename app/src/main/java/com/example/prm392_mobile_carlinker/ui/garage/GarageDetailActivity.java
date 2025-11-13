@@ -22,6 +22,7 @@ import com.example.prm392_mobile_carlinker.R;
 import com.example.prm392_mobile_carlinker.data.model.garage.Garage;
 import com.example.prm392_mobile_carlinker.data.model.garage.GarageDetail;
 import com.example.prm392_mobile_carlinker.ui.adapter.GarageServiceCategoryAdapter;
+import com.example.prm392_mobile_carlinker.util.SessionManager;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.button.MaterialButton;
 
@@ -47,14 +48,20 @@ public class GarageDetailActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private MaterialButton btnEmergencyCall;
     private MaterialButton btnBookService;
+    private MaterialButton btnChatWithGarage;
 
     private int garageId;
     private String garagePhoneNumber;
+    private String garageName;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_garage_detail);
+
+        // Initialize SessionManager
+        sessionManager = new SessionManager(this);
 
         // Get garage ID from intent
         garageId = getIntent().getIntExtra(EXTRA_GARAGE_ID, -1);
@@ -85,6 +92,7 @@ public class GarageDetailActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         btnEmergencyCall = findViewById(R.id.btnEmergencyCall);
         btnBookService = findViewById(R.id.btnBookService);
+        btnChatWithGarage = findViewById(R.id.btnChatWithGarage);
     }
 
     private void setupToolbar() {
@@ -147,6 +155,9 @@ public class GarageDetailActivity extends AppCompatActivity {
         // Store phone number for emergency call
         garagePhoneNumber = garage.getPhoneNumber();
 
+        // Store garage name for chat
+        garageName = garage.getName();
+
         // Set toolbar title
         collapsingToolbar.setTitle(garage.getName());
 
@@ -183,6 +194,9 @@ public class GarageDetailActivity extends AppCompatActivity {
 
         // Setup emergency call button
         setupEmergencyCallButton();
+
+        // Setup chat button
+        setupChatButton();
     }
 
     private void setupEmergencyCallButton() {
@@ -201,6 +215,36 @@ public class GarageDetailActivity extends AppCompatActivity {
         btnBookService.setOnClickListener(v -> {
             Intent intent = new Intent(this, com.example.prm392_mobile_carlinker.ui.service.ServiceBookingActivity.class);
             intent.putExtra("GARAGE_ID", garageId);
+            startActivity(intent);
+        });
+    }
+
+    private void setupChatButton() {
+        btnChatWithGarage.setOnClickListener(v -> {
+            // Check if user is logged in
+            if (!sessionManager.isLoggedIn()) {
+                Toast.makeText(this, "Vui lòng đăng nhập để chat với garage", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Check if user is a customer (not a garage owner)
+            String userRole = sessionManager.getUserRoleString();
+            if (userRole != null && userRole.equals("GARAGE")) {
+                Toast.makeText(this, "Garage không thể chat với garage khác", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Get customer ID
+            int customerId = sessionManager.getUserId();
+            if (customerId <= 0) {
+                Toast.makeText(this, "Không thể xác định thông tin người dùng", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Open InitiateChatActivity
+            Intent intent = new Intent(this, com.example.prm392_mobile_carlinker.ui.chat.InitiateChatActivity.class);
+            intent.putExtra(com.example.prm392_mobile_carlinker.ui.chat.InitiateChatActivity.EXTRA_GARAGE_ID, garageId);
+            intent.putExtra(com.example.prm392_mobile_carlinker.ui.chat.InitiateChatActivity.EXTRA_GARAGE_NAME, garageName);
             startActivity(intent);
         });
     }

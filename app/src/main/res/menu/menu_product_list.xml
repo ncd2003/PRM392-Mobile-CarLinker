@@ -16,6 +16,13 @@
         android:title="Đơn hàng của tôi"
         app:showAsAction="ifRoom" />
 
+    <!-- Messages/Chat Icon -->
+    <item
+        android:id="@+id/action_messages"
+        android:icon="@android:drawable/ic_menu_send"
+        android:title="Tin nhắn"
+        app:showAsAction="ifRoom" />
+
     <!-- Dealer Orders Icon -->
     <item
         android:id="@+id/action_dealer_orders"

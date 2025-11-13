@@ -45,12 +45,16 @@
         </activity>
 
         <!-- Product List Activity -->
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.PRM392MobileCarLinker" />
+
         <activity
             android:name=".ui.shop.ProductListActivity"
-            android:exported="true"
-            />
-            />
-            />
+            android:exported="true" />
+
         <activity android:name=".ui.vehicle.VehicleListActivity" android:exported="true" />
         <activity android:name=".ui.vehicle.VehicleDetailActivity" android:exported="false" />
         <activity android:name=".ui.vehicle.VehicleFormActivity" android:exported="false" />
@@ -117,6 +121,12 @@
             android:name=".ui.dealer.DealerOrdersActivity"
             android:exported="true"
             android:label="Quản lý đơn hàng" />
+
+        <!-- Initiate Chat Activity (UC-02) -->
+        <activity
+            android:name=".ui.chat.InitiateChatActivity"
+            android:exported="false"
+            android:label="Start Chat" />
 
         <!-- Chat Room List Activity -->
         <activity

@@ -12,6 +12,9 @@ import com.example.prm392_mobile_carlinker.data.model.chat.ChatApiResponse;
 import com.example.prm392_mobile_carlinker.data.model.chat.ChatMessage;
 import com.example.prm392_mobile_carlinker.data.model.chat.ChatRoom;
 import com.example.prm392_mobile_carlinker.data.model.chat.CreateChatRoomRequest;
+import com.example.prm392_mobile_carlinker.data.model.chat.EditMessageRequest;
+import com.example.prm392_mobile_carlinker.data.model.chat.HideMessageRequest;
+import com.example.prm392_mobile_carlinker.data.model.chat.HideMessageResponse;
 import com.example.prm392_mobile_carlinker.data.model.chat.SendMessageRequest;
 import com.example.prm392_mobile_carlinker.data.model.chat.UploadFileResponse;
 import com.example.prm392_mobile_carlinker.data.model.order.CreateOrderRequest;
@@ -194,6 +197,22 @@ public interface ApiService {
     // Get all chat rooms for a garage
     @GET("api/chat/rooms/garage/{garageId}")
     Call<ChatApiResponse<List<ChatRoom>>> getGarageChatRooms(@Path("garageId") int garageId);
+
+    // ============== UC-03: Edit / Hide Message APIs ==============
+
+    // Edit message content (only by sender)
+    @PATCH("api/chat/messages/{messageId}/edit")
+    Call<ChatApiResponse<ChatMessage>> editMessage(
+            @Path("messageId") long messageId,
+            @Body EditMessageRequest request
+    );
+
+    // Hide message (soft delete - only by sender)
+    @PATCH("api/chat/messages/{messageId}/hide")
+    Call<ChatApiResponse<HideMessageResponse>> hideMessage(
+            @Path("messageId") long messageId,
+            @Body HideMessageRequest request
+    );
 }
 
 

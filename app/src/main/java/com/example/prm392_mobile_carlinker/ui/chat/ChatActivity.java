@@ -1,11 +1,13 @@
 package com.example.prm392_mobile_carlinker.ui.chat;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -25,7 +27,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.prm392_mobile_carlinker.R;
 import com.example.prm392_mobile_carlinker.data.model.chat.ChatMessage;
+import com.example.prm392_mobile_carlinker.data.model.chat.EditMessageRequest;
 import com.example.prm392_mobile_carlinker.data.model.chat.FileType;
+import com.example.prm392_mobile_carlinker.data.model.chat.HideMessageRequest;
+import com.example.prm392_mobile_carlinker.data.model.chat.HideMessageResponse;
 import com.example.prm392_mobile_carlinker.data.model.chat.MessageType;
 import com.example.prm392_mobile_carlinker.data.model.chat.SendMessageRequest;
 import com.example.prm392_mobile_carlinker.data.model.chat.UploadFileResponse;
@@ -107,6 +112,9 @@ public class ChatActivity extends AppCompatActivity {
 
     private void setupRecyclerView() {
         adapter = new ChatMessageAdapter(this, customerId);
+        
+        // Set long click listener for edit/delete
+        adapter.setOnMessageLongClickListener(this::showMessageOptionsDialog);
         
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setStackFromEnd(true); // Start from bottom
@@ -280,6 +288,134 @@ public class ChatActivity extends AppCompatActivity {
         progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
         btnSend.setEnabled(!show);
         btnAttach.setEnabled(!show);
+    }
+
+    /**
+     * UC-03: Show options dialog for message (Edit/Delete)
+     */
+    private void showMessageOptionsDialog(ChatMessage message, int position) {
+        // Only show options for user's own messages
+        if (message.getSenderId() != customerId) {
+            return;
+        }
+
+        // Can only edit text messages
+        boolean canEdit = message.getMessageTypeEnum() == MessageType.TEXT;
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Message Options");
+
+        String[] options;
+        if (canEdit) {
+            options = new String[]{"Edit", "Delete"};
+        } else {
+            options = new String[]{"Delete"};
+        }
+
+        builder.setItems(options, (dialog, which) -> {
+            if (canEdit && which == 0) {
+                // Edit
+                showEditMessageDialog(message);
+            } else {
+                // Delete (which == 1 if canEdit, which == 0 if !canEdit)
+                showDeleteConfirmationDialog(message);
+            }
+        });
+
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
+    }
+
+    /**
+     * UC-03: Show edit message dialog
+     */
+    private void showEditMessageDialog(ChatMessage message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_edit_message, null);
+        builder.setView(dialogView);
+
+        EditText etEditMessage = dialogView.findViewById(R.id.et_edit_message);
+        etEditMessage.setText(message.getMessage());
+        etEditMessage.setSelection(message.getMessage().length()); // Move cursor to end
+
+        AlertDialog dialog = builder.create();
+
+        dialogView.findViewById(R.id.btn_cancel).setOnClickListener(v -> dialog.dismiss());
+        
+        dialogView.findViewById(R.id.btn_save).setOnClickListener(v -> {
+            String newMessage = etEditMessage.getText().toString().trim();
+            
+            if (newMessage.isEmpty()) {
+                Toast.makeText(this, "Message cannot be empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (newMessage.equals(message.getMessage())) {
+                Toast.makeText(this, "No changes made", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+                return;
+            }
+
+            // Call edit API
+            editMessage(message.getId(), newMessage);
+            dialog.dismiss();
+        });
+
+        dialog.show();
+    }
+
+    /**
+     * UC-03: Edit message
+     */
+    private void editMessage(long messageId, String newContent) {
+        showLoading(true);
+
+        chatRepository.editMessage(messageId, newContent, customerId, 0) // 0 = CUSTOMER
+                .observe(this, result -> {
+                    showLoading(false);
+
+                    if (result != null && result.status == Result.Status.SUCCESS) {
+                        ChatMessage updatedMessage = result.data;
+                        adapter.updateMessage(updatedMessage);
+                        Toast.makeText(this, "Message edited", Toast.LENGTH_SHORT).show();
+                    } else if (result != null && result.status == Result.Status.ERROR) {
+                        String error = result.message;
+                        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    /**
+     * UC-03: Show delete confirmation dialog
+     */
+    private void showDeleteConfirmationDialog(ChatMessage message) {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete Message")
+                .setMessage("Are you sure you want to delete this message?")
+                .setPositiveButton("Delete", (dialog, which) -> deleteMessage(message.getId()))
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    /**
+     * UC-03: Delete message (hide message)
+     */
+    private void deleteMessage(long messageId) {
+        showLoading(true);
+
+        chatRepository.hideMessage(messageId, customerId, 0) // 0 = CUSTOMER
+                .observe(this, result -> {
+                    showLoading(false);
+
+                    if (result != null && result.status == Result.Status.SUCCESS) {
+                        HideMessageResponse response = result.data;
+                        adapter.removeMessage(messageId);
+                        Toast.makeText(this, "Message deleted", Toast.LENGTH_SHORT).show();
+                    } else if (result != null && result.status == Result.Status.ERROR) {
+                        String error = result.message;
+                        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override

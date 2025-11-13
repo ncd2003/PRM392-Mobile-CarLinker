@@ -1,7 +1,5 @@
 package com.example.prm392_mobile_carlinker.data.model.chat
 
-package com.example.prm392_mobile_carlinker.data.model.chat
-
 /**
  * Enum for sender type in chat
  */

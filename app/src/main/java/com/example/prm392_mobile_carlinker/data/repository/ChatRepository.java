@@ -7,6 +7,9 @@ import com.example.prm392_mobile_carlinker.data.model.chat.ChatApiResponse;
 import com.example.prm392_mobile_carlinker.data.model.chat.ChatMessage;
 import com.example.prm392_mobile_carlinker.data.model.chat.ChatRoom;
 import com.example.prm392_mobile_carlinker.data.model.chat.CreateChatRoomRequest;
+import com.example.prm392_mobile_carlinker.data.model.chat.EditMessageRequest;
+import com.example.prm392_mobile_carlinker.data.model.chat.HideMessageRequest;
+import com.example.prm392_mobile_carlinker.data.model.chat.HideMessageResponse;
 import com.example.prm392_mobile_carlinker.data.model.chat.SendMessageRequest;
 import com.example.prm392_mobile_carlinker.data.model.chat.UploadFileResponse;
 import com.example.prm392_mobile_carlinker.data.remote.ApiService;
@@ -302,6 +305,99 @@ public class ChatRepository {
             return fileName.substring(lastDotIndex + 1);
         }
         return "";
+    }
+
+    /**
+     * UC-03: Edit message content
+     * Only the original sender can edit their message
+     * @param messageId The ID of the message to edit
+     * @param newContent The new message content
+     * @param senderId The ID of the sender
+     * @param senderType The type of sender (0=CUSTOMER, 1=STAFF, 2=ADMIN)
+     */
+    public LiveData<Result<ChatMessage>> editMessage(long messageId, String newContent, int senderId, int senderType) {
+        MutableLiveData<Result<ChatMessage>> result = new MutableLiveData<>();
+        result.setValue(Result.loading(null));
+
+        EditMessageRequest request = new EditMessageRequest(newContent, senderId, senderType);
+
+        apiService.editMessage(messageId, request).enqueue(new Callback<ChatApiResponse<ChatMessage>>() {
+            @Override
+            public void onResponse(Call<ChatApiResponse<ChatMessage>> call, Response<ChatApiResponse<ChatMessage>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ChatApiResponse<ChatMessage> apiResponse = response.body();
+                    if (apiResponse.getStatus() == 200 && apiResponse.getData() != null) {
+                        result.setValue(Result.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(Result.error(apiResponse.getMessage(), null));
+                    }
+                } else {
+                    // Handle HTTP error responses
+                    if (response.code() == 403) {
+                        result.setValue(Result.error("You don't have permission to edit this message", null));
+                    } else if (response.code() == 404) {
+                        result.setValue(Result.error("Message not found", null));
+                    } else if (response.code() == 400) {
+                        result.setValue(Result.error("Cannot edit this message", null));
+                    } else {
+                        result.setValue(Result.error("Failed to edit message: " + response.message(), null));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ChatApiResponse<ChatMessage>> call, Throwable t) {
+                result.setValue(Result.error("Network error: " + t.getMessage(), null));
+            }
+        });
+
+        return result;
+    }
+
+    /**
+     * UC-03: Hide message (soft delete)
+     * Only the original sender can hide their message
+     * @param messageId The ID of the message to hide
+     * @param senderId The ID of the sender
+     * @param senderType The type of sender (0=CUSTOMER, 1=STAFF, 2=ADMIN)
+     */
+    public LiveData<Result<HideMessageResponse>> hideMessage(long messageId, int senderId, int senderType) {
+        MutableLiveData<Result<HideMessageResponse>> result = new MutableLiveData<>();
+        result.setValue(Result.loading(null));
+
+        HideMessageRequest request = new HideMessageRequest(senderId, senderType);
+
+        apiService.hideMessage(messageId, request).enqueue(new Callback<ChatApiResponse<HideMessageResponse>>() {
+            @Override
+            public void onResponse(Call<ChatApiResponse<HideMessageResponse>> call, Response<ChatApiResponse<HideMessageResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ChatApiResponse<HideMessageResponse> apiResponse = response.body();
+                    if (apiResponse.getStatus() == 200 && apiResponse.getData() != null) {
+                        result.setValue(Result.success(apiResponse.getData()));
+                    } else {
+                        result.setValue(Result.error(apiResponse.getMessage(), null));
+                    }
+                } else {
+                    // Handle HTTP error responses
+                    if (response.code() == 403) {
+                        result.setValue(Result.error("You don't have permission to delete this message", null));
+                    } else if (response.code() == 404) {
+                        result.setValue(Result.error("Message not found", null));
+                    } else if (response.code() == 400) {
+                        result.setValue(Result.error("Message is already deleted", null));
+                    } else {
+                        result.setValue(Result.error("Failed to delete message: " + response.message(), null));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ChatApiResponse<HideMessageResponse>> call, Throwable t) {
+                result.setValue(Result.error("Network error: " + t.getMessage(), null));
+            }
+        });
+
+        return result;
     }
 }
 

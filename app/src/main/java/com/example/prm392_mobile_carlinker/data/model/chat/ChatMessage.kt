@@ -97,3 +97,42 @@ data class UploadFileResponse(
     @SerializedName("uploadedAt")
     val uploadedAt: String
 )
+
+/**
+ * Edit Message Request Model - UC-03
+ */
+data class EditMessageRequest(
+    @SerializedName("message")
+    val message: String,
+
+    @SerializedName("senderId")
+    val senderId: Int,
+
+    @SerializedName("senderType")
+    val senderType: Int
+)
+
+/**
+ * Hide Message Request Model - UC-03
+ */
+data class HideMessageRequest(
+    @SerializedName("senderId")
+    val senderId: Int,
+
+    @SerializedName("senderType")
+    val senderType: Int
+)
+
+/**
+ * Hide Message Response Model - UC-03
+ */
+data class HideMessageResponse(
+    @SerializedName("messageId")
+    val messageId: Long,
+
+    @SerializedName("roomId")
+    val roomId: Long,
+
+    @SerializedName("hiddenAt")
+    val hiddenAt: String
+)

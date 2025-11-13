@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.example.prm392_mobile_carlinker.R;
 import com.example.prm392_mobile_carlinker.data.model.chat.ChatMessage;
 import com.example.prm392_mobile_carlinker.data.model.chat.FileType;
+import com.example.prm392_mobile_carlinker.data.model.chat.MessageStatus;
 import com.example.prm392_mobile_carlinker.data.model.chat.MessageType;
 
 import java.text.ParseException;
@@ -35,11 +36,20 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final Context context;
     private final int currentUserId;
     private List<ChatMessage> messages;
+    private OnMessageLongClickListener longClickListener;
+
+    public interface OnMessageLongClickListener {
+        void onMessageLongClick(ChatMessage message, int position);
+    }
 
     public ChatMessageAdapter(Context context, int currentUserId) {
         this.context = context;
         this.currentUserId = currentUserId;
         this.messages = new ArrayList<>();
+    }
+
+    public void setOnMessageLongClickListener(OnMessageLongClickListener listener) {
+        this.longClickListener = listener;
     }
 
     public void setMessages(List<ChatMessage> messages) {
@@ -50,6 +60,26 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void addMessage(ChatMessage message) {
         this.messages.add(message);
         notifyItemInserted(messages.size() - 1);
+    }
+
+    public void updateMessage(ChatMessage updatedMessage) {
+        for (int i = 0; i < messages.size(); i++) {
+            if (messages.get(i).getId() == updatedMessage.getId()) {
+                messages.set(i, updatedMessage);
+                notifyItemChanged(i);
+                break;
+            }
+        }
+    }
+
+    public void removeMessage(long messageId) {
+        for (int i = 0; i < messages.size(); i++) {
+            if (messages.get(i).getId() == messageId) {
+                messages.remove(i);
+                notifyItemRemoved(i);
+                break;
+            }
+        }
     }
 
     @Override
@@ -111,8 +141,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
         public void bind(ChatMessage message) {
-            // Set timestamp
-            tvTime.setText(formatTime(message.getCreatedAt()));
+            // Set timestamp with "Edited" indicator if message was edited
+            String timeText = formatTime(message.getCreatedAt());
+            if (message.getMessageStatusEnum() == MessageStatus.EDITED) {
+                timeText = "Edited " + formatTime(message.getUpdatedAt());
+            }
+            tvTime.setText(timeText);
 
             // Check message type
             MessageType messageType = message.getMessageTypeEnum();
@@ -144,6 +178,15 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 tvMessage.setVisibility(View.VISIBLE);
                 tvMessage.setText(message.getMessage());
             }
+
+            // Set long click listener for edit/delete options
+            itemView.setOnLongClickListener(v -> {
+                if (longClickListener != null) {
+                    longClickListener.onMessageLongClick(message, getAdapterPosition());
+                    return true;
+                }
+                return false;
+            });
         }
     }
 
@@ -174,8 +217,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 tvSenderName.setText("Unknown");
             }
 
-            // Set timestamp
-            tvTime.setText(formatTime(message.getCreatedAt()));
+            // Set timestamp with "Edited" indicator if message was edited
+            String timeText = formatTime(message.getCreatedAt());
+            if (message.getMessageStatusEnum() == MessageStatus.EDITED) {
+                timeText = "Edited " + formatTime(message.getUpdatedAt());
+            }
+            tvTime.setText(timeText);
 
             // Check message type
             MessageType messageType = message.getMessageTypeEnum();

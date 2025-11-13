@@ -10,8 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.prm392_mobile_carlinker.R;
+import com.example.prm392_mobile_carlinker.data.model.chat.ChatMessage;
 import com.example.prm392_mobile_carlinker.data.model.chat.ChatRoom;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,13 +21,12 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Adapter for displaying chat room list
+ * Adapter for displaying list of chat rooms
  */
 public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.ChatRoomViewHolder> {
 
     private final Context context;
-    private final List<ChatRoom> chatRooms;
-    private final SimpleDateFormat timeFormat;
+    private List<ChatRoom> chatRooms;
     private OnChatRoomClickListener listener;
 
     public interface OnChatRoomClickListener {
@@ -35,7 +36,11 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.ChatRo
     public ChatRoomAdapter(Context context) {
         this.context = context;
         this.chatRooms = new ArrayList<>();
-        this.timeFormat = new SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault());
+    }
+
+    public void setChatRooms(List<ChatRoom> chatRooms) {
+        this.chatRooms = chatRooms != null ? chatRooms : new ArrayList<>();
+        notifyDataSetChanged();
     }
 
     public void setOnChatRoomClickListener(OnChatRoomClickListener listener) {
@@ -45,7 +50,8 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.ChatRo
     @NonNull
     @Override
     public ChatRoomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_chat_room, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_chat_room, parent, false);
         return new ChatRoomViewHolder(view);
     }
 
@@ -60,93 +66,49 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.ChatRo
         return chatRooms.size();
     }
 
-    public void setChatRooms(List<ChatRoom> newChatRooms) {
-        chatRooms.clear();
-        if (newChatRooms != null) {
-            chatRooms.addAll(newChatRooms);
-        }
-        notifyDataSetChanged();
-    }
-
     class ChatRoomViewHolder extends RecyclerView.ViewHolder {
-        TextView tvGarageName;
-        TextView tvLastMessage;
-        TextView tvTime;
-        View unreadIndicator;
+        private final TextView tvGarageName;
+        private final TextView tvLastMessage;
+        private final TextView tvLastMessageTime;
 
-        ChatRoomViewHolder(@NonNull View itemView) {
+        public ChatRoomViewHolder(@NonNull View itemView) {
             super(itemView);
             tvGarageName = itemView.findViewById(R.id.tv_garage_name);
             tvLastMessage = itemView.findViewById(R.id.tv_last_message);
-            tvTime = itemView.findViewById(R.id.tv_time);
-            unreadIndicator = itemView.findViewById(R.id.unread_indicator);
+            tvLastMessageTime = itemView.findViewById(R.id.tv_last_message_time);
 
             itemView.setOnClickListener(v -> {
-                if (listener != null) {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        listener.onChatRoomClick(chatRooms.get(position));
-                    }
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION && listener != null) {
+                    listener.onChatRoomClick(chatRooms.get(position));
                 }
             });
         }
 
-        void bind(ChatRoom chatRoom) {
-            // Display garage name
+        public void bind(ChatRoom chatRoom) {
+            // Set garage name
             if (chatRoom.getGarageName() != null) {
                 tvGarageName.setText(chatRoom.getGarageName());
+            } else {
+                tvGarageName.setText("Unknown Garage");
             }
 
-            // Display last message preview
-            if (chatRoom.getLastMessage() != null) {
-                String messageText = chatRoom.getLastMessage().getMessage();
-                if (messageText != null && !messageText.isEmpty()) {
-                    tvLastMessage.setText(messageText);
-                } else {
-                    // Media message without caption
-                    switch (chatRoom.getLastMessage().getMessageTypeEnum()) {
-                        case MEDIA:
-                            if (chatRoom.getLastMessage().getFileTypeEnum() != null) {
-                                switch (chatRoom.getLastMessage().getFileTypeEnum()) {
-                                    case IMAGE:
-                                        tvLastMessage.setText("📷 Image");
-                                        break;
-                                    case VIDEO:
-                                        tvLastMessage.setText("📹 Video");
-                                        break;
-                                    case FILE:
-                                        tvLastMessage.setText("📄 File");
-                                        break;
-                                }
-                            } else {
-                                tvLastMessage.setText("Media");
-                            }
-                            break;
-                        case SYSTEM:
-                            tvLastMessage.setText("System message");
-                            break;
-                        default:
-                            tvLastMessage.setText("");
-                    }
-                }
-
-                // Show unread indicator if message is unread and not from current user
-                if (!chatRoom.getLastMessage().isRead() && 
-                    chatRoom.getLastMessage().getSenderType() != 0) { // Not from customer
-                    unreadIndicator.setVisibility(View.VISIBLE);
-                } else {
-                    unreadIndicator.setVisibility(View.GONE);
-                }
+            // Set last message
+            ChatMessage lastMessage = chatRoom.getLastMessage();
+            if (lastMessage != null && lastMessage.getMessage() != null) {
+                tvLastMessage.setText(lastMessage.getMessage());
+                tvLastMessage.setVisibility(View.VISIBLE);
             } else {
                 tvLastMessage.setText("No messages yet");
-                unreadIndicator.setVisibility(View.GONE);
+                tvLastMessage.setVisibility(View.VISIBLE);
             }
 
-            // Display time of last message
+            // Set last message time
             if (chatRoom.getLastMessageAt() != null) {
-                tvTime.setText(formatTime(chatRoom.getLastMessageAt()));
+                tvLastMessageTime.setText(formatTime(chatRoom.getLastMessageAt()));
+                tvLastMessageTime.setVisibility(View.VISIBLE);
             } else {
-                tvTime.setText("");
+                tvLastMessageTime.setVisibility(View.GONE);
             }
         }
     }
@@ -156,11 +118,30 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.ChatRo
      */
     private String formatTime(String timestamp) {
         try {
-            SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-            Date date = iso8601Format.parse(timestamp);
-            return timeFormat.format(date);
-        } catch (Exception e) {
-            return "";
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+            Date date = inputFormat.parse(timestamp);
+
+            if (date != null) {
+                // Check if today
+                Date now = new Date();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                String today = dateFormat.format(now);
+                String messageDate = dateFormat.format(date);
+
+                if (today.equals(messageDate)) {
+                    // Show time if today
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+                    return timeFormat.format(date);
+                } else {
+                    // Show date if not today
+                    SimpleDateFormat outputFormat = new SimpleDateFormat("MMM dd", Locale.getDefault());
+                    return outputFormat.format(date);
+                }
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
+        return timestamp;
     }
 }
+

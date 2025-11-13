@@ -6,66 +6,74 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="8dp"
-    app:cardElevation="2dp">
+    app:cardElevation="2dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp">
 
+        <!-- Garage Icon -->
+        <ImageView
+            android:id="@+id/iv_garage_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_garage"
+            android:contentDescription="Garage icon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
         <!-- Garage Name -->
         <TextView
             android:id="@+id/tv_garage_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/tv_time"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Auto Repair Shop" />
-
-        <!-- Time -->
-        <TextView
-            android:id="@+id/tv_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:textColor="@android:color/darker_gray"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Nov 12, 10:30" />
+            android:textColor="@android:color/black"
+            android:maxLines="1"
+            android:ellipsize="end"
+            tools:text="ABC Auto Repair"
+            app:layout_constraintTop_toTopOf="@id/iv_garage_icon"
+            app:layout_constraintStart_toEndOf="@id/iv_garage_icon"
+            app:layout_constraintEnd_toStartOf="@id/tv_last_message_time" />
 
         <!-- Last Message -->
         <TextView
             android:id="@+id/tv_last_message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:textColor="@android:color/darker_gray"
             android:textSize="14sp"
-            app:layout_constraintEnd_toStartOf="@id/unread_indicator"
-            app:layout_constraintStart_toStartOf="parent"
+            android:textColor="@android:color/darker_gray"
+            android:maxLines="1"
+            android:ellipsize="end"
+            tools:text="Thank you for choosing our service!"
             app:layout_constraintTop_toBottomOf="@id/tv_garage_name"
-            tools:text="Hi! How can I assist you today?" />
+            app:layout_constraintStart_toEndOf="@id/iv_garage_icon"
+            app:layout_constraintEnd_toStartOf="@id/tv_last_message_time"
+            app:layout_constraintBottom_toBottomOf="@id/iv_garage_icon" />
 
-        <!-- Unread Indicator -->
-        <View
-            android:id="@+id/unread_indicator"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:background="@drawable/bg_unread_indicator"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/tv_last_message"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tv_last_message"
-            tools:visibility="visible" />
+        <!-- Last Message Time -->
+        <TextView
+            android:id="@+id/tv_last_message_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@android:color/darker_gray"
+            tools:text="10:30 AM"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>
+

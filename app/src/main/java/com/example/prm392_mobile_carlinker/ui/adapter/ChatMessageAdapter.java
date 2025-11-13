@@ -13,9 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.prm392_mobile_carlinker.R;
 import com.example.prm392_mobile_carlinker.data.model.chat.ChatMessage;
-import com.example.prm392_mobile_carlinker.data.model.chat.MessageType;
 import com.example.prm392_mobile_carlinker.data.model.chat.FileType;
+import com.example.prm392_mobile_carlinker.data.model.chat.MessageType;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,44 +24,55 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Adapter for displaying chat messages in RecyclerView
+ * Adapter for displaying chat messages in a RecyclerView
+ * Shows sent messages on the right and received messages on the left
  */
 public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final int VIEW_TYPE_MESSAGE_SENT = 1;
-    private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
+    private static final int VIEW_TYPE_SENT = 1;
+    private static final int VIEW_TYPE_RECEIVED = 2;
 
     private final Context context;
-    private final List<ChatMessage> messages;
     private final int currentUserId;
-    private final SimpleDateFormat timeFormat;
+    private List<ChatMessage> messages;
 
     public ChatMessageAdapter(Context context, int currentUserId) {
         this.context = context;
-        this.messages = new ArrayList<>();
         this.currentUserId = currentUserId;
-        this.timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        this.messages = new ArrayList<>();
+    }
+
+    public void setMessages(List<ChatMessage> messages) {
+        this.messages = messages != null ? messages : new ArrayList<>();
+        notifyDataSetChanged();
+    }
+
+    public void addMessage(ChatMessage message) {
+        this.messages.add(message);
+        notifyItemInserted(messages.size() - 1);
     }
 
     @Override
     public int getItemViewType(int position) {
         ChatMessage message = messages.get(position);
+        // If sender ID matches current user, it's a sent message
         if (message.getSenderId() == currentUserId) {
-            return VIEW_TYPE_MESSAGE_SENT;
+            return VIEW_TYPE_SENT;
         } else {
-            return VIEW_TYPE_MESSAGE_RECEIVED;
+            return VIEW_TYPE_RECEIVED;
         }
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view;
-        if (viewType == VIEW_TYPE_MESSAGE_SENT) {
-            view = LayoutInflater.from(context).inflate(R.layout.item_chat_message_sent, parent, false);
+        if (viewType == VIEW_TYPE_SENT) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_chat_message_sent, parent, false);
             return new SentMessageViewHolder(view);
         } else {
-            view = LayoutInflater.from(context).inflate(R.layout.item_chat_message_received, parent, false);
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_chat_message_received, parent, false);
             return new ReceivedMessageViewHolder(view);
         }
     }
@@ -68,7 +80,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ChatMessage message = messages.get(position);
-        
+
         if (holder instanceof SentMessageViewHolder) {
             ((SentMessageViewHolder) holder).bind(message);
         } else if (holder instanceof ReceivedMessageViewHolder) {
@@ -81,166 +93,135 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return messages.size();
     }
 
-    public void setMessages(List<ChatMessage> newMessages) {
-        messages.clear();
-        if (newMessages != null) {
-            // Reverse the list to show oldest first (API returns newest first)
-            for (int i = newMessages.size() - 1; i >= 0; i--) {
-                messages.add(newMessages.get(i));
-            }
-        }
-        notifyDataSetChanged();
-    }
-
-    public void addMessage(ChatMessage message) {
-        messages.add(message);
-        notifyItemInserted(messages.size() - 1);
-    }
-
-    public void addMessages(List<ChatMessage> newMessages) {
-        if (newMessages != null && !newMessages.isEmpty()) {
-            int startPosition = messages.size();
-            // Reverse and add
-            for (int i = newMessages.size() - 1; i >= 0; i--) {
-                messages.add(newMessages.get(i));
-            }
-            notifyItemRangeInserted(startPosition, newMessages.size());
-        }
-    }
-
     /**
-     * ViewHolder for sent messages (right side)
+     * ViewHolder for sent messages (displayed on the right)
      */
     class SentMessageViewHolder extends RecyclerView.ViewHolder {
-        TextView tvMessage;
-        TextView tvTime;
-        ImageView ivMediaImage;
-        View layoutMedia;
+        private final TextView tvMessage;
+        private final TextView tvTime;
+        private final ImageView ivMedia;
+        private final View mediaContainer;
 
-        SentMessageViewHolder(@NonNull View itemView) {
+        public SentMessageViewHolder(@NonNull View itemView) {
             super(itemView);
             tvMessage = itemView.findViewById(R.id.tv_message);
             tvTime = itemView.findViewById(R.id.tv_time);
-            ivMediaImage = itemView.findViewById(R.id.iv_media_image);
-            layoutMedia = itemView.findViewById(R.id.layout_media);
+            ivMedia = itemView.findViewById(R.id.iv_media);
+            mediaContainer = itemView.findViewById(R.id.media_container);
         }
 
-        void bind(ChatMessage message) {
-            // Show timestamp
+        public void bind(ChatMessage message) {
+            // Set timestamp
             tvTime.setText(formatTime(message.getCreatedAt()));
 
+            // Check message type
             MessageType messageType = message.getMessageTypeEnum();
-            
-            if (messageType == MessageType.TEXT) {
-                // Text message
-                tvMessage.setVisibility(View.VISIBLE);
-                layoutMedia.setVisibility(View.GONE);
-                tvMessage.setText(message.getMessage());
-            } else if (messageType == MessageType.MEDIA) {
-                // Media message
+
+            if (messageType == MessageType.MEDIA && message.getFileUrl() != null) {
+                // Show media message
+                mediaContainer.setVisibility(View.VISIBLE);
+
                 FileType fileType = message.getFileTypeEnum();
-                
                 if (fileType == FileType.IMAGE) {
-                    // Show image
-                    tvMessage.setVisibility(message.getMessage() != null ? View.VISIBLE : View.GONE);
-                    layoutMedia.setVisibility(View.VISIBLE);
-                    
-                    if (message.getMessage() != null) {
-                        tvMessage.setText(message.getMessage());
-                    }
-                    
+                    // Load image
                     Glide.with(context)
                             .load(message.getFileUrl())
                             .placeholder(R.drawable.ic_image_placeholder)
                             .error(R.drawable.ic_image_error)
-                            .into(ivMediaImage);
-                } else {
-                    // Video or File - show as text with icon for now
-                    tvMessage.setVisibility(View.VISIBLE);
-                    layoutMedia.setVisibility(View.GONE);
-                    String fileTypeText = fileType == FileType.VIDEO ? "📹 Video" : "📄 File";
-                    tvMessage.setText(message.getMessage() != null ? 
-                            fileTypeText + ": " + message.getMessage() : fileTypeText);
+                            .into(ivMedia);
                 }
+
+                // Show caption if exists
+                if (message.getMessage() != null && !message.getMessage().isEmpty()) {
+                    tvMessage.setVisibility(View.VISIBLE);
+                    tvMessage.setText(message.getMessage());
+                } else {
+                    tvMessage.setVisibility(View.GONE);
+                }
+            } else {
+                // Show text message
+                mediaContainer.setVisibility(View.GONE);
+                tvMessage.setVisibility(View.VISIBLE);
+                tvMessage.setText(message.getMessage());
             }
         }
     }
 
     /**
-     * ViewHolder for received messages (left side)
+     * ViewHolder for received messages (displayed on the left)
      */
     class ReceivedMessageViewHolder extends RecyclerView.ViewHolder {
-        TextView tvSenderName;
-        TextView tvMessage;
-        TextView tvTime;
-        ImageView ivMediaImage;
-        View layoutMedia;
+        private final TextView tvSenderName;
+        private final TextView tvMessage;
+        private final TextView tvTime;
+        private final ImageView ivMedia;
+        private final View mediaContainer;
 
-        ReceivedMessageViewHolder(@NonNull View itemView) {
+        public ReceivedMessageViewHolder(@NonNull View itemView) {
             super(itemView);
             tvSenderName = itemView.findViewById(R.id.tv_sender_name);
             tvMessage = itemView.findViewById(R.id.tv_message);
             tvTime = itemView.findViewById(R.id.tv_time);
-            ivMediaImage = itemView.findViewById(R.id.iv_media_image);
-            layoutMedia = itemView.findViewById(R.id.layout_media);
+            ivMedia = itemView.findViewById(R.id.iv_media);
+            mediaContainer = itemView.findViewById(R.id.media_container);
         }
 
-        void bind(ChatMessage message) {
-            // Show sender name
+        public void bind(ChatMessage message) {
+            // Set sender name
             if (message.getSenderName() != null) {
                 tvSenderName.setText(message.getSenderName());
+            } else {
+                tvSenderName.setText("Unknown");
             }
 
-            // Show timestamp
+            // Set timestamp
             tvTime.setText(formatTime(message.getCreatedAt()));
 
+            // Check message type
             MessageType messageType = message.getMessageTypeEnum();
-            
-            if (messageType == MessageType.TEXT) {
-                // Text message
-                tvMessage.setVisibility(View.VISIBLE);
-                layoutMedia.setVisibility(View.GONE);
-                tvMessage.setText(message.getMessage());
-            } else if (messageType == MessageType.MEDIA) {
-                // Media message
+
+            if (messageType == MessageType.MEDIA && message.getFileUrl() != null) {
+                // Show media message
+                mediaContainer.setVisibility(View.VISIBLE);
+
                 FileType fileType = message.getFileTypeEnum();
-                
                 if (fileType == FileType.IMAGE) {
-                    // Show image
-                    tvMessage.setVisibility(message.getMessage() != null ? View.VISIBLE : View.GONE);
-                    layoutMedia.setVisibility(View.VISIBLE);
-                    
-                    if (message.getMessage() != null) {
-                        tvMessage.setText(message.getMessage());
-                    }
-                    
+                    // Load image
                     Glide.with(context)
                             .load(message.getFileUrl())
                             .placeholder(R.drawable.ic_image_placeholder)
                             .error(R.drawable.ic_image_error)
-                            .into(ivMediaImage);
-                } else {
-                    // Video or File - show as text with icon for now
-                    tvMessage.setVisibility(View.VISIBLE);
-                    layoutMedia.setVisibility(View.GONE);
-                    String fileTypeText = fileType == FileType.VIDEO ? "📹 Video" : "📄 File";
-                    tvMessage.setText(message.getMessage() != null ? 
-                            fileTypeText + ": " + message.getMessage() : fileTypeText);
+                            .into(ivMedia);
                 }
+
+                // Show caption if exists
+                if (message.getMessage() != null && !message.getMessage().isEmpty()) {
+                    tvMessage.setVisibility(View.VISIBLE);
+                    tvMessage.setText(message.getMessage());
+                } else {
+                    tvMessage.setVisibility(View.GONE);
+                }
+            } else {
+                // Show text message
+                mediaContainer.setVisibility(View.GONE);
+                tvMessage.setVisibility(View.VISIBLE);
+                tvMessage.setText(message.getMessage());
             }
         }
     }
 
     /**
-     * Format timestamp to time string
+     * Format timestamp to readable time
      */
     private String formatTime(String timestamp) {
         try {
-            SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-            Date date = iso8601Format.parse(timestamp);
-            return timeFormat.format(date);
-        } catch (Exception e) {
-            return "";
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat outputFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            Date date = inputFormat.parse(timestamp);
+            return date != null ? outputFormat.format(date) : timestamp;
+        } catch (ParseException e) {
+            return timestamp;
         }
     }
 }
+

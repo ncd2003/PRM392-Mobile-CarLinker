@@ -1,3 +1,4 @@
+
 package com.example.prm392_mobile_carlinker.data.model.chat
 
 import com.google.gson.annotations.SerializedName

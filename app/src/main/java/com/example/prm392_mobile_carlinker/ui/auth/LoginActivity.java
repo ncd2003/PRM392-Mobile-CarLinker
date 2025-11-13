@@ -89,9 +89,8 @@ public class LoginActivity extends AppCompatActivity {
                         if (token != null && !token.isEmpty()) {
                             saveToken(token);
                             Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-                            // Chuyển sang MainActivity (thay bằng activity bạn muốn)
-                            Intent intent = new Intent(LoginActivity.this, VehicleListActivity.class);
-                            // nếu bạn có MainActivity thay vào trên
+                            // Navigate to ProductListActivity (main shop/home screen)
+                            Intent intent = new Intent(LoginActivity.this, ProductListActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
                             finish();

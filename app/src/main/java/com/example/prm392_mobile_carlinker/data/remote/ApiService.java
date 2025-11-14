@@ -25,6 +25,7 @@ import com.example.prm392_mobile_carlinker.data.model.chat.SendMessageRequest;
 import com.example.prm392_mobile_carlinker.data.model.chat.UploadFileResponse;
 import com.example.prm392_mobile_carlinker.data.model.garage.GarageDetailResponse;
 import com.example.prm392_mobile_carlinker.data.model.garage.GarageResponse;
+import com.example.prm392_mobile_carlinker.data.model.garage.GarageListResponse;
 import com.example.prm392_mobile_carlinker.data.model.garage.GarageCreateResponse;
 import com.example.prm392_mobile_carlinker.data.model.garage.GarageUpdateServiceItem;
 import com.example.prm392_mobile_carlinker.data.model.garage.GarageServiceItemResponse;
@@ -166,6 +167,10 @@ public interface ApiService {
     // Get garage details by id - Lấy chi tiết garage by id
     @GET("api/Garage/details/{garageId}")
     Call<GarageDetailResponse> getGarageDetailsById(@Path("garageId") int garageId);
+
+    // Get garages by user ID - Lấy tất cả garage của một user
+    @GET("api/Garage/user/{userId}")
+    Call<GarageListResponse> getGaragesByUserId(@Path("userId") int userId);
 
     // Create garage - Tạo garage mới (GARAGE role after partner registration)
     @Multipart

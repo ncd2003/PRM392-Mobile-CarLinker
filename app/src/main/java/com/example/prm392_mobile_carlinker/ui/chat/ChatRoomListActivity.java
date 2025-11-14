@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.prm392_mobile_carlinker.R;
 import com.example.prm392_mobile_carlinker.data.model.chat.ChatRoom;
-import com.example.prm392_mobile_carlinker.data.model.garage.GarageResponse;
+import com.example.prm392_mobile_carlinker.data.model.garage.GarageListResponse;
 import com.example.prm392_mobile_carlinker.data.remote.RetrofitClient;
 import com.example.prm392_mobile_carlinker.data.repository.ChatRepository;
 import com.example.prm392_mobile_carlinker.data.repository.Result;
@@ -116,38 +116,19 @@ public class ChatRoomListActivity extends AppCompatActivity {
     private void loadGarageOwnerChatRooms() {
         Log.d("ChatRoomList", "Loading garages for owner - UserId: " + userId);
         
-        // Gọi API lấy tất cả garage
-        RetrofitClient.getApiService().getAllGarages().enqueue(new Callback<GarageResponse>() {
+        // Gọi API lấy garage của user này
+        RetrofitClient.getApiService().getGaragesByUserId(userId).enqueue(new Callback<GarageListResponse>() {
             @Override
-            public void onResponse(Call<GarageResponse> call, Response<GarageResponse> response) {
+            public void onResponse(Call<GarageListResponse> call, Response<GarageListResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    GarageResponse garageResponse = response.body();
+                    GarageListResponse garageListResponse = response.body();
                     
-                    if (garageResponse.getStatus() == 200 && garageResponse.getData() != null) {
-                        GarageResponse.GarageData garageData = garageResponse.getData();
-                        List<com.example.prm392_mobile_carlinker.data.model.garage.Garage> allGarages = garageData.getItems();
+                    if (garageListResponse.isSuccess() && garageListResponse.getData() != null) {
+                        List<GarageListResponse.GarageDto> userGarages = garageListResponse.getData();
                         
-                        if (allGarages == null || allGarages.isEmpty()) {
-                            Log.w("ChatRoomList", "No garages found in system");
-                            Toast.makeText(ChatRoomListActivity.this, 
-                                "Bạn chưa có garage nào. Vui lòng tạo garage trước.", 
-                                Toast.LENGTH_LONG).show();
-                            showLoading(false);
-                            rvChatRooms.setVisibility(View.GONE);
-                            emptyView.setVisibility(View.VISIBLE);
-                            return;
-                        }
+                        Log.d("ChatRoomList", "API returned " + userGarages.size() + " garages for user " + userId);
                         
-                        // Filter các garage thuộc về user này
-                        List<Integer> ownedGarageIds = new ArrayList<>();
-                        for (com.example.prm392_mobile_carlinker.data.model.garage.Garage garage : allGarages) {
-                            if (garage.getUserId() == userId) {
-                                ownedGarageIds.add(garage.getId());
-                                Log.d("ChatRoomList", "Found owned garage: " + garage.getName() + " (ID: " + garage.getId() + ")");
-                            }
-                        }
-                        
-                        if (ownedGarageIds.isEmpty()) {
+                        if (userGarages.isEmpty()) {
                             Log.w("ChatRoomList", "No garages found for user " + userId);
                             Toast.makeText(ChatRoomListActivity.this, 
                                 "Bạn chưa có garage nào. Vui lòng tạo garage trước.", 
@@ -158,12 +139,19 @@ public class ChatRoomListActivity extends AppCompatActivity {
                             return;
                         }
                         
+                        // Lấy danh sách garage IDs
+                        List<Integer> ownedGarageIds = new ArrayList<>();
+                        for (GarageListResponse.GarageDto garage : userGarages) {
+                            ownedGarageIds.add(garage.getId());
+                            Log.d("ChatRoomList", "Found owned garage: " + garage.getName() + " (ID: " + garage.getId() + ")");
+                        }
+                        
                         // Load chat rooms cho tất cả garage của owner
                         loadChatRoomsForMultipleGarages(ownedGarageIds);
                     } else {
-                        Log.e("ChatRoomList", "Failed to get garages: " + garageResponse.getMessage());
+                        Log.e("ChatRoomList", "Failed to get garages: " + garageListResponse.getMessage());
                         Toast.makeText(ChatRoomListActivity.this, 
-                            "Lỗi: " + garageResponse.getMessage(), 
+                            "Lỗi: " + garageListResponse.getMessage(), 
                             Toast.LENGTH_SHORT).show();
                         showLoading(false);
                         rvChatRooms.setVisibility(View.GONE);
@@ -172,7 +160,7 @@ public class ChatRoomListActivity extends AppCompatActivity {
                 } else {
                     Log.e("ChatRoomList", "Failed to load garages: " + response.code());
                     Toast.makeText(ChatRoomListActivity.this, 
-                        "Lỗi khi tải danh sách garage", 
+                        "Lỗi khi tải danh sách garage (" + response.code() + ")", 
                         Toast.LENGTH_SHORT).show();
                     showLoading(false);
                     rvChatRooms.setVisibility(View.GONE);
@@ -181,7 +169,7 @@ public class ChatRoomListActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<GarageResponse> call, Throwable t) {
+            public void onFailure(Call<GarageListResponse> call, Throwable t) {
                 Log.e("ChatRoomList", "Network error loading garages: " + t.getMessage());
                 Toast.makeText(ChatRoomListActivity.this, 
                     "Lỗi mạng: " + t.getMessage(), 

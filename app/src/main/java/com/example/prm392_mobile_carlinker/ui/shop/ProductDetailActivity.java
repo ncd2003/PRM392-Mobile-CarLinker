@@ -2,6 +2,7 @@ package com.example.prm392_mobile_carlinker.ui.shop;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -77,6 +79,14 @@ public class ProductDetailActivity extends AppCompatActivity implements VariantA
     }
 
     private void initViews() {
+        // Setup toolbar FIRST
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Chi tiết sản phẩm");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         progressBar = findViewById(R.id.progressBar);
         contentLayout = findViewById(R.id.contentLayout);
 
@@ -90,12 +100,6 @@ public class ProductDetailActivity extends AppCompatActivity implements VariantA
         warrantyPeriod = findViewById(R.id.warrantyPeriod);
         variantsRecyclerView = findViewById(R.id.variantsRecyclerView);
         addToCartButton = findViewById(R.id.addToCartButton);
-
-        // Setup toolbar
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Chi tiết sản phẩm");
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
 
         // Setup RecyclerView for variants
         variantAdapter = new VariantAdapter(this, this);
@@ -205,7 +209,9 @@ public class ProductDetailActivity extends AppCompatActivity implements VariantA
             return;
         }
 
-        if (selectedVariant.getStockQuantity() <= 0) {
+        // Check available stock (Stock - Hold Stock)
+        int availableStock = selectedVariant.getStockQuantity() - selectedVariant.getHoldQuantity();
+        if (availableStock <= 0) {
             Toast.makeText(this, "Sản phẩm này hiện đã hết hàng", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -241,27 +247,37 @@ public class ProductDetailActivity extends AppCompatActivity implements VariantA
 
     @Override
     public boolean onSupportNavigateUp() {
-        onBackPressed();
+        finish();
         return true;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_product_detail, menu);
+        Log.d("ProductDetailActivity", "onCreateOptionsMenu called, menu size: " + menu.size());
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        Log.d("ProductDetailActivity", "Menu item clicked: " + id);
+
+        // Handle back button
+        if (id == android.R.id.home) {
+            finish();
+            return true;
+        }
 
         // Handle action bar item clicks here
         if (id == R.id.action_cart) {
+            Log.d("ProductDetailActivity", "Cart icon clicked");
             // Open cart activity
             Intent intent = new Intent(this, CartActivity.class);
             startActivity(intent);
             return true;
         } else if (id == R.id.action_my_orders) {
+            Log.d("ProductDetailActivity", "My orders icon clicked");
             // Open my orders activity
             Intent intent = new Intent(this, MyOrdersActivity.class);
             startActivity(intent);

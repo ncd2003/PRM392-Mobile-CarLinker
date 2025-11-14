@@ -101,9 +101,15 @@ public class VNPayActivity extends AppCompatActivity {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
-                progressBar.setVisibility(View.VISIBLE);
                 Log.d(TAG, "Page started: " + url);
-                checkReturnUrl(url);
+
+                // ✅ Kiểm tra deep link ngay khi page bắt đầu load
+                if (checkDeepLinkUrl(url)) {
+                    view.stopLoading(); // Dừng load nếu là deep link
+                    progressBar.setVisibility(View.GONE);
+                } else {
+                    progressBar.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -118,14 +124,28 @@ public class VNPayActivity extends AppCompatActivity {
                 String url = request.getUrl().toString();
                 Log.d(TAG, "shouldOverrideUrlLoading: " + url);
 
-                // Bắt URL callback từ backend
-                if (checkReturnUrl(url)) {
-                    return true;
+                // ✅ Kiểm tra deep link trước
+                if (checkDeepLinkUrl(url)) {
+                    return true; // Chặn không cho WebView load
                 }
 
-                // Load các URL khác bình thường
-                view.loadUrl(url);
-                return true;
+                // Load URL bình thường
+                return false;
+            }
+
+            @Override
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                super.onReceivedError(view, errorCode, description, failingUrl);
+                Log.e(TAG, "WebView error: " + description + " for URL: " + failingUrl);
+
+                // Nếu là deep link bị lỗi, vẫn xử lý
+                if (checkDeepLinkUrl(failingUrl)) {
+                    // Deep link đã được xử lý
+                    return;
+                }
+
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(VNPayActivity.this, "Lỗi tải trang: " + description, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -146,24 +166,29 @@ public class VNPayActivity extends AppCompatActivity {
         webView.loadUrl(url);
     }
 
-    private boolean checkReturnUrl(String url) {
+    /**
+     * Kiểm tra và xử lý deep link URL
+     * @return true nếu là deep link, false nếu không phải
+     */
+    private boolean checkDeepLinkUrl(String url) {
         if (url == null) return false;
 
-        Log.d(TAG, "Checking return URL: " + url);
+        Log.d(TAG, "Checking deep link URL: " + url);
 
-        // Bắt deep link từ backend
+        // Bắt deep link payment-success
         if (url.startsWith("carlinker://payment-success")) {
             Uri uri = Uri.parse(url);
             String orderIdParam = uri.getQueryParameter("orderId");
-            Log.d(TAG, "Payment success detected! Order ID: " + orderIdParam);
+            Log.d(TAG, "✅ Payment success deep link detected! Order ID: " + orderIdParam);
             handlePaymentSuccess(orderIdParam);
             return true;
         }
 
+        // Bắt deep link payment-failed
         if (url.startsWith("carlinker://payment-failed")) {
             Uri uri = Uri.parse(url);
             String orderIdParam = uri.getQueryParameter("orderId");
-            Log.d(TAG, "Payment failed detected! Order ID: " + orderIdParam);
+            Log.d(TAG, "✅ Payment failed deep link detected! Order ID: " + orderIdParam);
             handlePaymentFailure(orderIdParam);
             return true;
         }
@@ -174,12 +199,32 @@ public class VNPayActivity extends AppCompatActivity {
     private void handlePaymentSuccess(String orderIdParam) {
         Log.d(TAG, "handlePaymentSuccess called with orderId: " + orderIdParam);
 
+        // Validate orderId
+        final String finalOrderId = (orderIdParam != null && !orderIdParam.isEmpty())
+                ? orderIdParam : orderId;
+
+        if (finalOrderId == null || finalOrderId.isEmpty()) {
+            Log.e(TAG, "Order ID is null or empty!");
+            Toast.makeText(this, "Lỗi: Không tìm thấy mã đơn hàng", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // ✅ KHÔNG CẦN GỌI API confirmPayment vì backend đã tự động update status trong Callback rồi
+        // Backend flow: VNPay → Backend Callback → UpdateOrderStatus → Redirect về app
+        Log.d(TAG, "✅ Payment already confirmed by backend callback. OrderId: " + finalOrderId);
+        navigateToSuccessScreen(finalOrderId);
+    }
+
+    /**
+     * Chuyển đến màn hình thanh toán thành công
+     */
+    private void navigateToSuccessScreen(String orderIdStr) {
         runOnUiThread(() -> {
             Toast.makeText(this, "Thanh toán thành công!", Toast.LENGTH_LONG).show();
 
             Intent intent = new Intent(this, PaymentSuccessActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("ORDER_ID", orderIdParam != null ? orderIdParam : orderId);
+            intent.putExtra("ORDER_ID", orderIdStr);
             startActivity(intent);
             finish();
         });
@@ -188,12 +233,16 @@ public class VNPayActivity extends AppCompatActivity {
     private void handlePaymentFailure(String orderIdParam) {
         Log.d(TAG, "handlePaymentFailure called with orderId: " + orderIdParam);
 
+        // Validate orderId
+        final String finalOrderId = (orderIdParam != null && !orderIdParam.isEmpty())
+                ? orderIdParam : orderId;
+
         runOnUiThread(() -> {
             Toast.makeText(this, "Thanh toán thất bại!", Toast.LENGTH_LONG).show();
 
             Intent intent = new Intent(this, PaymentFailedActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("ORDER_ID", orderIdParam != null ? orderIdParam : orderId);
+            intent.putExtra("ORDER_ID", finalOrderId);
             startActivity(intent);
             finish();
         });
@@ -207,7 +256,7 @@ public class VNPayActivity extends AppCompatActivity {
             new androidx.appcompat.app.AlertDialog.Builder(this)
                     .setTitle("Hủy thanh toán?")
                     .setMessage("Bạn có chắc muốn hủy thanh toán?")
-                    .setPositiveButton("Có", (dialog, which) -> super.onBackPressed())
+                    .setPositiveButton("Có", (dialog, which) -> finish())
                     .setNegativeButton("Không", null)
                     .show();
         }

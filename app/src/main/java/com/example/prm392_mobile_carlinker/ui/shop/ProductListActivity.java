@@ -6,10 +6,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView; // Thêm import này
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar; // Thêm import này
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,10 +29,12 @@ public class ProductListActivity extends AppCompatActivity implements ProductAda
     private ProductViewModel viewModel;
     private ProgressBar progressBar;
     private SearchView searchView;
+    private TextView emptyView; // Thêm biến cho emptyView
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Đảm bảo bạn đang dùng file layout XML đã sửa (có CoordinatorLayout và Toolbar)
         setContentView(R.layout.activity_product_list);
 
         // Initialize views
@@ -53,29 +57,22 @@ public class ProductListActivity extends AppCompatActivity implements ProductAda
         recyclerView = findViewById(R.id.recyclerViewProducts);
         progressBar = findViewById(R.id.progressBar);
         searchView = findViewById(R.id.searchView);
+        emptyView = findViewById(R.id.emptyView); // Ánh xạ emptyView
 
-        // Setup menu bar click listeners
-        findViewById(R.id.img_cart).setOnClickListener(v -> {
-            Intent intent = new Intent(this, CartActivity.class);
-            startActivity(intent);
-        });
+        // --- ĐÃ SỬA ---
+        // 1. Setup Toolbar mới
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        findViewById(R.id.img_my_orders).setOnClickListener(v -> {
-            Intent intent = new Intent(this, MyOrdersActivity.class);
-            startActivity(intent);
-        });
-
-        findViewById(R.id.btn_dealer_orders).setOnClickListener(v -> {
-            Intent intent = new Intent(this, com.example.prm392_mobile_carlinker.ui.dealer.DealerOrdersActivity.class);
-            startActivity(intent);
-        });
-
-        // Setup toolbar - check if ActionBar exists first
+        // 2. Thêm nút back (mũi tên quay lại)
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("Cửa hàng");
-            // Don't show back button since this is the launcher activity
-            // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true); // Hiển thị nút back
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
+
+        // 3. XÓA BỎ các listener của menu cũ (đã bị xóa)
+        // --- KẾT THÚC SỬA ---
     }
 
     private void setupRecyclerView() {
@@ -101,7 +98,7 @@ public class ProductListActivity extends AppCompatActivity implements ProductAda
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (newText == null || newText.trim().isEmpty()) {
-                    loadProducts();
+                    loadProducts(); // Tải lại sản phẩm gốc nếu ô tìm kiếm trống
                 }
                 return true;
             }
@@ -115,26 +112,34 @@ public class ProductListActivity extends AppCompatActivity implements ProductAda
                     case LOADING:
                         progressBar.setVisibility(View.VISIBLE);
                         recyclerView.setVisibility(View.GONE);
+                        emptyView.setVisibility(View.GONE); // Ẩn emptyView
                         break;
 
                     case SUCCESS:
                         progressBar.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.VISIBLE);
                         if (resource.getData() != null && !resource.getData().isEmpty()) {
+                            recyclerView.setVisibility(View.VISIBLE);
+                            emptyView.setVisibility(View.GONE);
                             productAdapter.setProducts(resource.getData());
                         } else {
                             // Empty data
+                            recyclerView.setVisibility(View.GONE);
+                            emptyView.setVisibility(View.VISIBLE); // Hiện emptyView
+                            emptyView.setText("Không có sản phẩm nào");
                             Toast.makeText(this, "Không có sản phẩm nào", Toast.LENGTH_SHORT).show();
                         }
                         break;
 
                     case ERROR:
                         progressBar.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.VISIBLE);
+                        recyclerView.setVisibility(View.GONE);
+                        emptyView.setVisibility(View.VISIBLE); // Hiện emptyView
                         String errorMsg = resource.getMessage();
                         if (errorMsg != null && errorMsg.contains("Failed to connect")) {
+                            emptyView.setText("Không thể kết nối tới server.");
                             Toast.makeText(this, "Không thể kết nối tới server. Vui lòng kiểm tra:\n1. Backend đang chạy?\n2. URL đúng chưa?", Toast.LENGTH_LONG).show();
                         } else {
+                            emptyView.setText("Lỗi: " + errorMsg);
                             Toast.makeText(this, "Lỗi: " + errorMsg, Toast.LENGTH_LONG).show();
                         }
                         break;
@@ -150,19 +155,27 @@ public class ProductListActivity extends AppCompatActivity implements ProductAda
                     case LOADING:
                         progressBar.setVisibility(View.VISIBLE);
                         recyclerView.setVisibility(View.GONE);
+                        emptyView.setVisibility(View.GONE);
                         break;
 
                     case SUCCESS:
                         progressBar.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.VISIBLE);
-                        if (resource.getData() != null) {
+                        if (resource.getData() != null && !resource.getData().isEmpty()) {
+                            recyclerView.setVisibility(View.VISIBLE);
+                            emptyView.setVisibility(View.GONE);
                             productAdapter.setProducts(resource.getData());
+                        } else {
+                            recyclerView.setVisibility(View.GONE);
+                            emptyView.setVisibility(View.VISIBLE);
+                            emptyView.setText("Không tìm thấy sản phẩm cho: '" + keyword + "'");
                         }
                         break;
 
                     case ERROR:
                         progressBar.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.VISIBLE);
+                        recyclerView.setVisibility(View.GONE);
+                        emptyView.setVisibility(View.VISIBLE);
+                        emptyView.setText("Lỗi tìm kiếm: " + resource.getMessage());
                         Toast.makeText(this, "Tìm kiếm thất bại: " + resource.getMessage(), Toast.LENGTH_SHORT).show();
                         break;
                 }
@@ -178,22 +191,32 @@ public class ProductListActivity extends AppCompatActivity implements ProductAda
         startActivity(intent);
     }
 
+    // Xử lý khi nhấn nút back trên toolbar
     @Override
     public boolean onSupportNavigateUp() {
-        onBackPressed();
+        finish(); // Đóng activity này và quay lại
         return true;
     }
 
+    // Nạp menu (các icon) vào toolbar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_product_list, menu);
         return true;
     }
 
+    // Xử lý khi nhấn vào các item trên menu (nút back, icon giỏ hàng...)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        // Xử lý nút back (quan trọng)
+        if (id == android.R.id.home) {
+            finish(); // Giống onSupportNavigateUp
+            return true;
+        }
+
+        // Xử lý các icon menu trên toolbar
         if (id == R.id.action_cart) {
             // Open cart activity
             Intent intent = new Intent(this, CartActivity.class);

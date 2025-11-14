@@ -2,6 +2,7 @@ package com.example.prm392_mobile_carlinker.ui.chat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -13,12 +14,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.prm392_mobile_carlinker.R;
 import com.example.prm392_mobile_carlinker.data.model.chat.ChatRoom;
+import com.example.prm392_mobile_carlinker.data.model.garage.GarageResponse;
+import com.example.prm392_mobile_carlinker.data.remote.RetrofitClient;
 import com.example.prm392_mobile_carlinker.data.repository.ChatRepository;
 import com.example.prm392_mobile_carlinker.data.repository.Result;
 import com.example.prm392_mobile_carlinker.ui.adapter.ChatRoomAdapter;
 import com.example.prm392_mobile_carlinker.util.SessionManager;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Activity for displaying list of chat rooms
@@ -77,24 +85,156 @@ public class ChatRoomListActivity extends AppCompatActivity {
         showLoading(true);
 
         // Load chat rooms based on user role
-        LiveData<Result<List<ChatRoom>>> chatRoomsLiveData;
-        
-        if ("STAFF".equalsIgnoreCase(userRole) || "GARAGE".equalsIgnoreCase(userRole)) {
-            // For garage staff/owner, load garage chat rooms using garageId
+        if ("GARAGE".equalsIgnoreCase(userRole)) {
+            // For garage owner, load ALL garages owned by this user first
+            loadGarageOwnerChatRooms();
+        } else if ("STAFF".equalsIgnoreCase(userRole)) {
+            // For garage staff, load chat rooms using garageId from session
             int garageId = sessionManager.getGarageId();
-            if (garageId == -1) {
-                Toast.makeText(this, "Lỗi: Không tìm thấy thông tin garage", Toast.LENGTH_SHORT).show();
+            Log.d("ChatRoomList", "Loading garage chats - Role: " + userRole + ", GarageId: " + garageId);
+            
+            if (garageId == -1 || garageId == 0) {
+                Toast.makeText(this, "Lỗi: Tài khoản chưa được gán vào garage. Vui lòng đăng nhập lại hoặc liên hệ quản trị viên.", Toast.LENGTH_LONG).show();
                 showLoading(false);
                 rvChatRooms.setVisibility(View.GONE);
                 emptyView.setVisibility(View.VISIBLE);
                 return;
             }
-            chatRoomsLiveData = chatRepository.getGarageChatRooms(garageId);
+            
+            LiveData<Result<List<ChatRoom>>> chatRoomsLiveData = chatRepository.getGarageChatRooms(garageId);
+            observeChatRooms(chatRoomsLiveData);
         } else {
             // For customers, load customer chat rooms
-            chatRoomsLiveData = chatRepository.getCustomerChatRooms(userId);
+            LiveData<Result<List<ChatRoom>>> chatRoomsLiveData = chatRepository.getCustomerChatRooms(userId);
+            observeChatRooms(chatRoomsLiveData);
         }
+    }
+    
+    /**
+     * Load chat rooms for garage owner - owner có thể có nhiều garage
+     */
+    private void loadGarageOwnerChatRooms() {
+        Log.d("ChatRoomList", "Loading garages for owner - UserId: " + userId);
+        
+        // Gọi API lấy tất cả garage
+        RetrofitClient.getApiService().getAllGarages().enqueue(new Callback<GarageResponse>() {
+            @Override
+            public void onResponse(Call<GarageResponse> call, Response<GarageResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    GarageResponse garageResponse = response.body();
+                    
+                    if (garageResponse.getStatus() == 200 && garageResponse.getData() != null) {
+                        GarageResponse.GarageData garageData = garageResponse.getData();
+                        List<com.example.prm392_mobile_carlinker.data.model.garage.Garage> allGarages = garageData.getItems();
+                        
+                        if (allGarages == null || allGarages.isEmpty()) {
+                            Log.w("ChatRoomList", "No garages found in system");
+                            Toast.makeText(ChatRoomListActivity.this, 
+                                "Bạn chưa có garage nào. Vui lòng tạo garage trước.", 
+                                Toast.LENGTH_LONG).show();
+                            showLoading(false);
+                            rvChatRooms.setVisibility(View.GONE);
+                            emptyView.setVisibility(View.VISIBLE);
+                            return;
+                        }
+                        
+                        // Filter các garage thuộc về user này
+                        List<Integer> ownedGarageIds = new ArrayList<>();
+                        for (com.example.prm392_mobile_carlinker.data.model.garage.Garage garage : allGarages) {
+                            if (garage.getUserId() == userId) {
+                                ownedGarageIds.add(garage.getId());
+                                Log.d("ChatRoomList", "Found owned garage: " + garage.getName() + " (ID: " + garage.getId() + ")");
+                            }
+                        }
+                        
+                        if (ownedGarageIds.isEmpty()) {
+                            Log.w("ChatRoomList", "No garages found for user " + userId);
+                            Toast.makeText(ChatRoomListActivity.this, 
+                                "Bạn chưa có garage nào. Vui lòng tạo garage trước.", 
+                                Toast.LENGTH_LONG).show();
+                            showLoading(false);
+                            rvChatRooms.setVisibility(View.GONE);
+                            emptyView.setVisibility(View.VISIBLE);
+                            return;
+                        }
+                        
+                        // Load chat rooms cho tất cả garage của owner
+                        loadChatRoomsForMultipleGarages(ownedGarageIds);
+                    } else {
+                        Log.e("ChatRoomList", "Failed to get garages: " + garageResponse.getMessage());
+                        Toast.makeText(ChatRoomListActivity.this, 
+                            "Lỗi: " + garageResponse.getMessage(), 
+                            Toast.LENGTH_SHORT).show();
+                        showLoading(false);
+                        rvChatRooms.setVisibility(View.GONE);
+                        emptyView.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    Log.e("ChatRoomList", "Failed to load garages: " + response.code());
+                    Toast.makeText(ChatRoomListActivity.this, 
+                        "Lỗi khi tải danh sách garage", 
+                        Toast.LENGTH_SHORT).show();
+                    showLoading(false);
+                    rvChatRooms.setVisibility(View.GONE);
+                    emptyView.setVisibility(View.VISIBLE);
+                }
+            }
 
+            @Override
+            public void onFailure(Call<GarageResponse> call, Throwable t) {
+                Log.e("ChatRoomList", "Network error loading garages: " + t.getMessage());
+                Toast.makeText(ChatRoomListActivity.this, 
+                    "Lỗi mạng: " + t.getMessage(), 
+                    Toast.LENGTH_SHORT).show();
+                showLoading(false);
+                rvChatRooms.setVisibility(View.GONE);
+                emptyView.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+    
+    /**
+     * Load và merge chat rooms từ nhiều garage
+     */
+    private void loadChatRoomsForMultipleGarages(List<Integer> garageIds) {
+        Log.d("ChatRoomList", "Loading chat rooms for " + garageIds.size() + " garages");
+        
+        final List<ChatRoom> allChatRooms = new ArrayList<>();
+        final int[] completedRequests = {0};
+        final int totalRequests = garageIds.size();
+        
+        for (Integer garageId : garageIds) {
+            chatRepository.getGarageChatRooms(garageId).observe(ChatRoomListActivity.this, result -> {
+                completedRequests[0]++;
+                
+                if (result != null && result.status == Result.Status.SUCCESS && result.data != null) {
+                    allChatRooms.addAll(result.data);
+                    Log.d("ChatRoomList", "Loaded " + result.data.size() + " chat rooms from garage " + garageId);
+                }
+                
+                // Khi đã load xong tất cả garage
+                if (completedRequests[0] == totalRequests) {
+                    showLoading(false);
+                    
+                    if (!allChatRooms.isEmpty()) {
+                        adapter.setChatRooms(allChatRooms);
+                        rvChatRooms.setVisibility(View.VISIBLE);
+                        emptyView.setVisibility(View.GONE);
+                        Log.d("ChatRoomList", "Total chat rooms loaded: " + allChatRooms.size());
+                    } else {
+                        rvChatRooms.setVisibility(View.GONE);
+                        emptyView.setVisibility(View.VISIBLE);
+                        Log.d("ChatRoomList", "No chat rooms found");
+                    }
+                }
+            });
+        }
+    }
+    
+    /**
+     * Observe chat rooms LiveData (dùng cho customer và staff)
+     */
+    private void observeChatRooms(LiveData<Result<List<ChatRoom>>> chatRoomsLiveData) {
         chatRoomsLiveData.observe(this, result -> {
             showLoading(false);
 

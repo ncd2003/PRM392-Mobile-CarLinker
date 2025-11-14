@@ -33,6 +33,9 @@ public class Garage {
     @SerializedName("longitude")
     private String longitude;
 
+    @SerializedName("userId")
+    private int userId;
+
     // Khoảng cách tính toán từ vị trí hiện tại (km)
     private double distance;
 
@@ -111,6 +114,14 @@ public class Garage {
 
     public void setLongitude(String longitude) {
         this.longitude = longitude;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public double getDistance() {

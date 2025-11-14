@@ -123,6 +123,15 @@ public class StaffLoginActivity extends AppCompatActivity {
                         Log.d(TAG, "Garage ID: " + garageId);
                         Log.d(TAG, "Access Token: " + accessToken);
 
+                        // Kiểm tra nếu là STAFF hoặc GARAGE nhưng không có garageId
+                        if (("STAFF".equalsIgnoreCase(userRole) || "GARAGE".equalsIgnoreCase(userRole)) && garageId == null) {
+                            Log.e(TAG, "ERROR: Staff/Garage user has no garageId!");
+                            Toast.makeText(StaffLoginActivity.this,
+                                "Lỗi: Tài khoản chưa được gán vào garage nào. Vui lòng liên hệ quản trị viên.",
+                                Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
                         // Lưu session với garageId
                         sessionManager.createLoginSession(userId, userEmail, userName, userRole, garageId, accessToken);
 

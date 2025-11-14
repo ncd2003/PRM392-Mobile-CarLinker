@@ -22,6 +22,7 @@ import com.example.prm392_mobile_carlinker.data.model.chat.RoomMember;
 import com.example.prm392_mobile_carlinker.data.repository.ChatRepository;
 import com.example.prm392_mobile_carlinker.data.repository.Result;
 import com.example.prm392_mobile_carlinker.ui.adapter.RoomMemberAdapter;
+import com.example.prm392_mobile_carlinker.util.SessionManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -31,8 +32,12 @@ import java.util.List;
  * UC-04: Activity for managing chat room members
  * Features:
  * - Display list of room members
- * - Add new members (staff/admin only)
+ * - Add new members (garage owner/staff only)
  * - Remove members with confirmation
+ * 
+ * Permission Rules:
+ * - Only garage owner or staff can add/remove members
+ * - Customers can only view members
  */
 public class RoomMembersActivity extends AppCompatActivity implements RoomMemberAdapter.OnMemberActionListener {
     
@@ -46,8 +51,14 @@ public class RoomMembersActivity extends AppCompatActivity implements RoomMember
     
     // Data
     private ChatRepository chatRepository;
+    private SessionManager sessionManager;
     private RoomMemberAdapter memberAdapter;
     private long roomId;
+    private int garageId;
+    private int customerId;
+    private int currentUserId;
+    private int currentUserGarageId;
+    private String currentUserRole;
     private List<RoomMember> memberList = new ArrayList<>();
     
     @Override
@@ -55,8 +66,17 @@ public class RoomMembersActivity extends AppCompatActivity implements RoomMember
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room_members);
         
-        // Get room ID from intent
+        // Initialize SessionManager
+        sessionManager = new SessionManager(this);
+        currentUserId = sessionManager.getUserId();
+        currentUserRole = sessionManager.getUserRoleString();
+        currentUserGarageId = sessionManager.getGarageId();
+        
+        // Get data from intent
         roomId = getIntent().getLongExtra("ROOM_ID", -1);
+        garageId = getIntent().getIntExtra("GARAGE_ID", -1);
+        customerId = getIntent().getIntExtra("CUSTOMER_ID", -1);
+        
         if (roomId == -1) {
             Toast.makeText(this, "Invalid room ID", Toast.LENGTH_SHORT).show();
             finish();
@@ -75,6 +95,9 @@ public class RoomMembersActivity extends AppCompatActivity implements RoomMember
         // Initialize views
         initViews();
         
+        // Check permissions and setup UI accordingly
+        setupPermissions();
+        
         // Setup RecyclerView
         setupRecyclerView();
         
@@ -85,6 +108,29 @@ public class RoomMembersActivity extends AppCompatActivity implements RoomMember
         fabAddMember.setOnClickListener(v -> showAddMemberDialog());
     }
     
+    /**
+     * Check if current user has permission to manage members
+     * Only garage owner/staff can add members
+     */
+    private void setupPermissions() {
+        boolean canManageMembers = false;
+        
+        // Check if user is garage owner or staff of this garage
+        if (("STAFF".equalsIgnoreCase(currentUserRole) || "GARAGE".equalsIgnoreCase(currentUserRole)) 
+            && currentUserGarageId == garageId) {
+            canManageMembers = true;
+        }
+        
+        // Show/hide FAB based on permissions
+        if (canManageMembers) {
+            fabAddMember.setVisibility(View.VISIBLE);
+        } else {
+            fabAddMember.setVisibility(View.GONE);
+            // Show info message
+            Toast.makeText(this, "Only garage staff can manage members", Toast.LENGTH_SHORT).show();
+        }
+    }
+    
     private void initViews() {
         recyclerViewMembers = findViewById(R.id.recyclerViewMembers);
         progressBar = findViewById(R.id.progressBar);
@@ -93,7 +139,9 @@ public class RoomMembersActivity extends AppCompatActivity implements RoomMember
     }
     
     private void setupRecyclerView() {
-        memberAdapter = new RoomMemberAdapter(this, memberList, this);
+        boolean canManageMembers = (("STAFF".equalsIgnoreCase(currentUserRole) || "GARAGE".equalsIgnoreCase(currentUserRole)) 
+            && currentUserGarageId == garageId);
+        memberAdapter = new RoomMemberAdapter(this, memberList, this, canManageMembers);
         recyclerViewMembers.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewMembers.setAdapter(memberAdapter);
     }
@@ -129,6 +177,13 @@ public class RoomMembersActivity extends AppCompatActivity implements RoomMember
     }
     
     private void showAddMemberDialog() {
+        // Double check permissions
+        if (!("STAFF".equalsIgnoreCase(currentUserRole) || "GARAGE".equalsIgnoreCase(currentUserRole)) 
+            || currentUserGarageId != garageId) {
+            Toast.makeText(this, "You don't have permission to add members", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_member, null);
         
         EditText etUserId = dialogView.findViewById(R.id.etUserId);
@@ -200,6 +255,13 @@ public class RoomMembersActivity extends AppCompatActivity implements RoomMember
     
     @Override
     public void onRemoveMember(RoomMember member, int position) {
+        // Check permissions before allowing remove
+        if (!(("STAFF".equalsIgnoreCase(currentUserRole) || "GARAGE".equalsIgnoreCase(currentUserRole)) 
+            && currentUserGarageId == garageId)) {
+            Toast.makeText(this, "You don't have permission to remove members", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
         new AlertDialog.Builder(this)
                 .setTitle("Remove Member")
                 .setMessage("Are you sure you want to remove " + member.getUserName() + " from this room?")

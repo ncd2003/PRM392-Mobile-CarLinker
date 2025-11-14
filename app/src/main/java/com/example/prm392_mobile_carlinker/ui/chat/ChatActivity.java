@@ -439,6 +439,8 @@ public class ChatActivity extends AppCompatActivity {
     private void openRoomMembersActivity() {
         Intent intent = new Intent(this, com.example.prm392_mobile_carlinker.ui.RoomMembersActivity.class);
         intent.putExtra("ROOM_ID", roomId);
+        intent.putExtra("GARAGE_ID", garageId);
+        intent.putExtra("CUSTOMER_ID", customerId);
         startActivity(intent);
     }
 

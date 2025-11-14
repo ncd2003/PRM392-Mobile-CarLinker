@@ -23,9 +23,11 @@ public class LoginResponse {
         private int id;
         private String email;
         private String role;
+        private Integer garageId; // ID của garage mà staff/owner quản lý
 
         public int getId() { return id; }
         public String getEmail() { return email; }
         public String getRole() { return role; }
+        public Integer getGarageId() { return garageId; }
     }
 }

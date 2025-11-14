@@ -80,10 +80,16 @@ public class ChatRoomListActivity extends AppCompatActivity {
         LiveData<Result<List<ChatRoom>>> chatRoomsLiveData;
         
         if ("STAFF".equalsIgnoreCase(userRole) || "GARAGE".equalsIgnoreCase(userRole)) {
-            // For garage staff/owner, load garage chat rooms
-            // Note: userId here is the staff's userId, but we need garageId
-            // Assuming staff are associated with a garage in their session
-            chatRoomsLiveData = chatRepository.getGarageChatRooms(userId);
+            // For garage staff/owner, load garage chat rooms using garageId
+            int garageId = sessionManager.getGarageId();
+            if (garageId == -1) {
+                Toast.makeText(this, "Lỗi: Không tìm thấy thông tin garage", Toast.LENGTH_SHORT).show();
+                showLoading(false);
+                rvChatRooms.setVisibility(View.GONE);
+                emptyView.setVisibility(View.VISIBLE);
+                return;
+            }
+            chatRoomsLiveData = chatRepository.getGarageChatRooms(garageId);
         } else {
             // For customers, load customer chat rooms
             chatRoomsLiveData = chatRepository.getCustomerChatRooms(userId);

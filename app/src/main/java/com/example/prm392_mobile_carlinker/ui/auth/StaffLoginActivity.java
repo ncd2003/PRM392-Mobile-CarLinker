@@ -114,15 +114,17 @@ public class StaffLoginActivity extends AppCompatActivity {
                         String userEmail = user.getEmail();
                         String userName = userEmail.split("@")[0];
                         String userRole = user.getRole(); // "STAFF" hoặc role tương ứng
+                        Integer garageId = user.getGarageId(); // Lấy garageId từ response
 
                         Log.d(TAG, "Staff login successful!");
                         Log.d(TAG, "User ID: " + userId);
                         Log.d(TAG, "Email: " + userEmail);
                         Log.d(TAG, "Role: " + userRole);
+                        Log.d(TAG, "Garage ID: " + garageId);
                         Log.d(TAG, "Access Token: " + accessToken);
 
-                        // Lưu session
-                        sessionManager.createLoginSession(userId, userEmail, userName, userRole, accessToken);
+                        // Lưu session với garageId
+                        sessionManager.createLoginSession(userId, userEmail, userName, userRole, garageId, accessToken);
 
                         Toast.makeText(StaffLoginActivity.this,
                             "Đăng nhập nhân viên thành công!",

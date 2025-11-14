@@ -11,6 +11,7 @@ public class SessionManager {
     private static final String KEY_USER_NAME = "userName";
     private static final String KEY_USER_ROLE = "userRole";
     private static final String KEY_USER_ROLE_STRING = "userRoleString"; // Thêm key mới cho role string
+    private static final String KEY_GARAGE_ID = "garageId"; // ID của garage (cho staff/owner)
     private static final String KEY_AUTH_TOKEN = "authToken";
 
     private SharedPreferences prefs;
@@ -50,6 +51,20 @@ public class SessionManager {
         editor.apply();
     }
 
+    // Save login session với role string và garageId (cho staff/owner)
+    public void createLoginSession(int userId, String email, String userName, String userRole, Integer garageId, String token) {
+        editor.putBoolean(KEY_IS_LOGGED_IN, true);
+        editor.putInt(KEY_USER_ID, userId);
+        editor.putString(KEY_USER_EMAIL, email);
+        editor.putString(KEY_USER_NAME, userName);
+        editor.putString(KEY_USER_ROLE_STRING, userRole);
+        if (garageId != null) {
+            editor.putInt(KEY_GARAGE_ID, garageId);
+        }
+        editor.putString(KEY_AUTH_TOKEN, token);
+        editor.apply();
+    }
+
     // Get user ID
     public int getUserId() {
         return prefs.getInt(KEY_USER_ID, -1);
@@ -73,6 +88,11 @@ public class SessionManager {
     // Get user role as string
     public String getUserRoleString() {
         return prefs.getString(KEY_USER_ROLE_STRING, "GUEST");
+    }
+
+    // Get garage ID (for staff/owner)
+    public int getGarageId() {
+        return prefs.getInt(KEY_GARAGE_ID, -1);
     }
 
     // Get auth token

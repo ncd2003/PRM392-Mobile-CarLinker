@@ -28,6 +28,7 @@ public class RoomMemberAdapter extends RecyclerView.Adapter<RoomMemberAdapter.Me
     private List<RoomMember> members;
     private OnMemberActionListener listener;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+    private boolean canManageMembers = false;
     
     public interface OnMemberActionListener {
         void onRemoveMember(RoomMember member, int position);
@@ -37,6 +38,18 @@ public class RoomMemberAdapter extends RecyclerView.Adapter<RoomMemberAdapter.Me
         this.context = context;
         this.members = members;
         this.listener = listener;
+    }
+    
+    public RoomMemberAdapter(Context context, List<RoomMember> members, OnMemberActionListener listener, boolean canManageMembers) {
+        this.context = context;
+        this.members = members;
+        this.listener = listener;
+        this.canManageMembers = canManageMembers;
+    }
+    
+    public void setCanManageMembers(boolean canManageMembers) {
+        this.canManageMembers = canManageMembers;
+        notifyDataSetChanged();
     }
     
     @NonNull
@@ -81,11 +94,16 @@ public class RoomMemberAdapter extends RecyclerView.Adapter<RoomMemberAdapter.Me
         }
         
         // Set remove button listener
-        holder.btnRemove.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onRemoveMember(member, holder.getAdapterPosition());
-            }
-        });
+        if (canManageMembers) {
+            holder.btnRemove.setVisibility(View.VISIBLE);
+            holder.btnRemove.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onRemoveMember(member, holder.getAdapterPosition());
+                }
+            });
+        } else {
+            holder.btnRemove.setVisibility(View.GONE);
+        }
     }
     
     @Override

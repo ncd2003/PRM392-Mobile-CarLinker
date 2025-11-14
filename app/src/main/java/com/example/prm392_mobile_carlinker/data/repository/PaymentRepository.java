@@ -22,20 +22,15 @@ public class PaymentRepository {
         MutableLiveData<Resource<VNPayResponse>> result = new MutableLiveData<>();
         result.setValue(Resource.loading(null));
 
-        apiService.createVNPayPaymentUrl(orderId, moneyToPay, description).enqueue(new Callback<String>() {
+        apiService.createVNPayPaymentUrl(orderId, moneyToPay, description).enqueue(new Callback<VNPayResponse>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                if (response.isSuccessful() || response.code() == 201) {
-                    // Backend returns plain text URL in body
-                    String paymentUrl = response.body();
+            public void onResponse(Call<VNPayResponse> call, Response<VNPayResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Backend returns JSON: {"status": 200, "message": "Success", "data": "payment_url"}
+                    VNPayResponse vnPayResponse = response.body();
 
-                    if (paymentUrl != null && !paymentUrl.trim().isEmpty()) {
-                        // Create VNPayResponse object with the URL
-                        VNPayResponse vnPayResponse = new VNPayResponse();
-                        vnPayResponse.setStatus(response.code());
-                        vnPayResponse.setMessage("Success");
-                        vnPayResponse.setData(paymentUrl.trim());
-
+                    // Validate payment URL exists
+                    if (vnPayResponse.getData() != null && !vnPayResponse.getData().trim().isEmpty()) {
                         result.setValue(Resource.success(vnPayResponse));
                     } else {
                         result.setValue(Resource.error("Không nhận được URL thanh toán từ VNPay", null));
@@ -46,7 +41,7 @@ public class PaymentRepository {
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
+            public void onFailure(Call<VNPayResponse> call, Throwable t) {
                 result.setValue(Resource.error("Lỗi kết nối: " + t.getMessage(), null));
             }
         });

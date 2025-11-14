@@ -2,25 +2,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Cart Icon -->
     <item
         android:id="@+id/action_cart"
-        android:icon="@android:drawable/ic_menu_gallery"
+        android:icon="@drawable/ic_shopping_cart"
         android:title="Giỏ hàng"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
-    <!-- My Orders Icon -->
     <item
         android:id="@+id/action_my_orders"
         android:icon="@android:drawable/ic_menu_my_calendar"
         android:title="Đơn hàng của tôi"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 
-    <!-- Dealer Orders Icon -->
     <item
         android:id="@+id/action_dealer_orders"
-        android:icon="@android:drawable/ic_menu_manage"
-        android:title="Quản lý đơn hàng (Dealer)"
-        app:showAsAction="ifRoom" />
+        android:title="Dealer"
+        app:showAsAction="never" />
 
 </menu>

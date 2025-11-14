@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.prm392_mobile_carlinker.R;
 import com.example.prm392_mobile_carlinker.data.model.order.Order;
 import com.example.prm392_mobile_carlinker.ui.adapter.OrderAdapter;
+import com.example.prm392_mobile_carlinker.ui.shop.ProductListActivity;
 
 public class MyOrdersActivity extends AppCompatActivity implements OrderAdapter.OnOrderClickListener {
 
@@ -48,6 +49,11 @@ public class MyOrdersActivity extends AppCompatActivity implements OrderAdapter.
         progressBar = findViewById(R.id.progressBar);
         emptyLayout = findViewById(R.id.emptyLayout);
 
+        // 1. Tìm Toolbar bằng ID
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+
+        // 2. Đặt nó làm ActionBar
+        setSupportActionBar(toolbar);
         // Setup toolbar
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("Đơn hàng của tôi");
@@ -156,7 +162,15 @@ public class MyOrdersActivity extends AppCompatActivity implements OrderAdapter.
 
     @Override
     public boolean onSupportNavigateUp() {
-        onBackPressed();
+        // Quay lại ProductListActivity
+        Intent intent = new Intent(this, ProductListActivity.class);
+
+        // Cờ này sẽ xóa các màn hình khác (như ProductDetail) ở trên
+        // và đưa ProductList về phía trước.
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        startActivity(intent);
+        finish(); // Đóng màn hình MyOrders
         return true;
     }
 

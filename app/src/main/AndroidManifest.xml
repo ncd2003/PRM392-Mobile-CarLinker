@@ -47,10 +47,8 @@
         <!-- Product List Activity -->
         <activity
             android:name=".ui.shop.ProductListActivity"
-            android:exported="true"
-            />
-            />
-            />
+            android:exported="true" />
+
         <activity android:name=".ui.vehicle.VehicleListActivity" android:exported="true" />
         <activity android:name=".ui.vehicle.VehicleDetailActivity" android:exported="false" />
         <activity android:name=".ui.vehicle.VehicleFormActivity" android:exported="false" />
@@ -92,11 +90,24 @@
             android:parentActivityName=".ui.checkout.CheckoutActivity"
             android:label="Thanh toán VNPay">
 
+            <!-- Deep link cho payment success -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="carlinker" />
+                <data
+                    android:scheme="carlinker"
+                    android:host="payment-success" />
+            </intent-filter>
+
+            <!-- Deep link cho payment failed -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="carlinker"
+                    android:host="payment-failed" />
             </intent-filter>
 
         </activity>

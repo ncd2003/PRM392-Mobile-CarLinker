@@ -62,7 +62,12 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
         btnCheckout = findViewById(R.id.btnCheckout);
         btnShopNow = findViewById(R.id.btnShopNow);
 
-        // Setup toolbar
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+
+        // 2. Đặt nó làm ActionBar
+        setSupportActionBar(toolbar);
+
+        // Setup toolbar (ĐOẠN NÀY ĐÃ CÓ SẴN)
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("Giỏ hàng");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

@@ -26,6 +26,7 @@ import com.example.prm392_mobile_carlinker.data.model.order.CreateOrderRequest;
 import com.example.prm392_mobile_carlinker.data.model.order.OrderResponse;
 import com.example.prm392_mobile_carlinker.data.model.order.OrderListResponse;
 import com.example.prm392_mobile_carlinker.data.model.order.UpdateOrderStatusRequest;
+import com.example.prm392_mobile_carlinker.data.model.payment.VNPayResponse;
 import com.example.prm392_mobile_carlinker.data.model.product.ProductDetailResponse;
 import com.example.prm392_mobile_carlinker.data.model.product.ProductResponse;
 import com.example.prm392_mobile_carlinker.data.model.servicecategory.ServiceCategoryCreateRequest;
@@ -128,9 +129,9 @@ public interface ApiService {
     // ============== VNPAY PAYMENT APIs ==============
 
     // Create VNPay payment URL - Tạo URL thanh toán VNPay
-    // Backend returns plain text URL, not JSON
+    // Backend returns JSON object with payment URL in "data" field
     @GET("api/Vnpay/CreatePaymentUrl")
-    Call<String> createVNPayPaymentUrl(
+    Call<VNPayResponse> createVNPayPaymentUrl(
             @Query("orderId") int orderId,
             @Query("moneyToPay") double moneyToPay,
             @Query("description") String description

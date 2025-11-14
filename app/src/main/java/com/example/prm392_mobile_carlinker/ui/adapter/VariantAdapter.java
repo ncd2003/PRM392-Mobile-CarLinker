@@ -85,9 +85,10 @@ public class VariantAdapter extends RecyclerView.Adapter<VariantAdapter.VariantV
             NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
             tvVariantPrice.setText(formatter.format(variant.getPrice()));
 
-            // Set stock info
-            if (variant.getStockQuantity() > 0) {
-                tvStock.setText("Còn hàng: " + variant.getStockQuantity());
+            // Set stock info - Available Stock = Stock - Hold Stock
+            int availableStock = variant.getStockQuantity() - variant.getHoldQuantity();
+            if (availableStock > 0) {
+                tvStock.setText("Còn hàng: " + availableStock);
                 tvStock.setTextColor(context.getResources().getColor(android.R.color.holo_green_dark));
             } else {
                 tvStock.setText("Hết hàng");

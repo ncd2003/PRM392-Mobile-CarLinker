@@ -209,7 +209,9 @@ public class ProductDetailActivity extends AppCompatActivity implements VariantA
             return;
         }
 
-        if (selectedVariant.getStockQuantity() <= 0) {
+        // Check available stock (Stock - Hold Stock)
+        int availableStock = selectedVariant.getStockQuantity() - selectedVariant.getHoldQuantity();
+        if (availableStock <= 0) {
             Toast.makeText(this, "Sản phẩm này hiện đã hết hàng", Toast.LENGTH_SHORT).show();
             return;
         }

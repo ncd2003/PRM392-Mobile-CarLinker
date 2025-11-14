@@ -44,4 +44,10 @@
     <string name="error_garage_not_found">Lỗi: Không tìm thấy thông tin garage</string>
     <string name="no_services">Garage này chưa có dịch vụ nào</string>
     <string name="btn_emergency_call">🚨 CỨU HỘ NGAY</string>
+
+    <!-- Garage Staff Strings -->
+    <string name="add_staff">Thêm nhân viên</string>
+    <string name="staff_image">Ảnh nhân viên</string>
+    <string name="edit">Chỉnh sửa</string>
+    <string name="delete">Xóa</string>
 </resources>

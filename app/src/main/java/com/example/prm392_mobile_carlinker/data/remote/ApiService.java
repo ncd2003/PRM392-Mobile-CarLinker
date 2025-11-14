@@ -2,6 +2,9 @@ package com.example.prm392_mobile_carlinker.data.remote;
 
 import com.example.prm392_mobile_carlinker.data.model.auth.LoginRequest;
 import com.example.prm392_mobile_carlinker.data.model.auth.LoginResponse;
+import com.example.prm392_mobile_carlinker.data.model.auth.PartnerRegisterRequest;
+import com.example.prm392_mobile_carlinker.data.model.auth.PartnerRegisterResponse;
+import com.example.prm392_mobile_carlinker.data.model.auth.RegisterRequest;
 import com.example.prm392_mobile_carlinker.data.model.cart.AddToCartRequest;
 import com.example.prm392_mobile_carlinker.data.model.cart.AddToCartResponse;
 import com.example.prm392_mobile_carlinker.data.model.cart.BaseResponse;
@@ -22,6 +25,7 @@ import com.example.prm392_mobile_carlinker.data.model.chat.SendMessageRequest;
 import com.example.prm392_mobile_carlinker.data.model.chat.UploadFileResponse;
 import com.example.prm392_mobile_carlinker.data.model.garage.GarageDetailResponse;
 import com.example.prm392_mobile_carlinker.data.model.garage.GarageResponse;
+import com.example.prm392_mobile_carlinker.data.model.garage.GarageCreateResponse;
 import com.example.prm392_mobile_carlinker.data.model.order.CreateOrderRequest;
 import com.example.prm392_mobile_carlinker.data.model.order.OrderResponse;
 import com.example.prm392_mobile_carlinker.data.model.order.OrderListResponse;
@@ -36,6 +40,10 @@ import com.example.prm392_mobile_carlinker.data.model.serviceitem.ServiceItemCre
 import com.example.prm392_mobile_carlinker.data.model.serviceitem.ServiceItemDetailResponse;
 import com.example.prm392_mobile_carlinker.data.model.serviceitem.ServiceItemResponse;
 import com.example.prm392_mobile_carlinker.data.model.serviceitem.ServiceItemUpdateRequest;
+import com.example.prm392_mobile_carlinker.data.model.garagestaff.GarageStaffCreateRequest;
+import com.example.prm392_mobile_carlinker.data.model.garagestaff.GarageStaffDetailResponse;
+import com.example.prm392_mobile_carlinker.data.model.garagestaff.GarageStaffListResponse;
+import com.example.prm392_mobile_carlinker.data.model.garagestaff.GarageStaffUpdateRequest;
 import com.example.prm392_mobile_carlinker.data.model.servicerecord.ServiceRecordCreateRequest;
 import com.example.prm392_mobile_carlinker.data.model.servicerecord.ServiceRecordResponse;
 import com.example.prm392_mobile_carlinker.data.model.user.UserResponse;
@@ -154,6 +162,20 @@ public interface ApiService {
     @GET("api/Garage/details/{garageId}")
     Call<GarageDetailResponse> getGarageDetailsById(@Path("garageId") int garageId);
 
+    // Create garage - Tạo garage mới (GARAGE role after partner registration)
+    @Multipart
+    @POST("api/Garage")
+    Call<GarageCreateResponse> createGarage(
+            @Part("name") RequestBody name,
+            @Part("email") RequestBody email,
+            @Part("description") RequestBody description,
+            @Part("operatingTime") RequestBody operatingTime,
+            @Part("phoneNumber") RequestBody phoneNumber,
+            @Part("latitude") RequestBody latitude,
+            @Part("longitude") RequestBody longitude,
+            @Part MultipartBody.Part imageFile
+    );
+
     // ============== SERVICE CATEGORY APIs ==============
 
     // Get all service categories - Lấy danh sách tất cả service categories (ADMIN only)
@@ -223,6 +245,18 @@ public interface ApiService {
     // Login user
     @POST("api/Auth/login")
     Call<LoginResponse> login(@Body LoginRequest request);
+
+    // Staff login
+    @POST("api/Auth/Staff/login")
+    Call<LoginResponse> staffLogin(@Body LoginRequest request);
+
+    // Register new customer account
+    @POST("api/Auth/register")
+    Call<LoginResponse> register(@Body RegisterRequest request);
+
+    // Register new partner (Garage Owner) account
+    @POST("api/Auth/partner/register")
+    Call<PartnerRegisterResponse> partnerRegister(@Body PartnerRegisterRequest request);
 
     // get all vehicles
     @GET("api/Vehicle/user")
@@ -340,4 +374,42 @@ public interface ApiService {
             @Path("garageId") int garageId,
             @Body ServiceRecordCreateRequest request
     );
+
+    // ============== GARAGE STAFF APIs ==============
+
+    // Get all garage staff - Lấy danh sách nhân viên garage (GARAGE only)
+    @GET("api/GarageStaff")
+    Call<GarageStaffListResponse> getAllGarageStaff(
+            @Query("page") int page,
+            @Query("size") int size,
+            @Query("sortBy") String sortBy,
+            @Query("isAsc") boolean isAsc
+    );
+
+    // Get garage staff by id - Lấy chi tiết nhân viên (GARAGE only)
+    @GET("api/GarageStaff/{id}")
+    Call<GarageStaffDetailResponse> getGarageStaffById(@Path("id") int id);
+
+    // Create garage staff - Tạo nhân viên mới (GARAGE only)
+    @POST("api/GarageStaff")
+    Call<GarageStaffDetailResponse> createGarageStaff(@Body GarageStaffCreateRequest request);
+
+    // Update garage staff - Cập nhật thông tin nhân viên (GARAGE only)
+    @PATCH("api/GarageStaff/{id}")
+    Call<GarageStaffDetailResponse> updateGarageStaff(
+            @Path("id") int id,
+            @Body GarageStaffUpdateRequest request
+    );
+
+    // Update garage staff image - Cập nhật ảnh nhân viên (GARAGE only)
+    @Multipart
+    @PATCH("api/GarageStaff/image/{id}")
+    Call<GarageStaffDetailResponse> updateGarageStaffImage(
+            @Path("id") int id,
+            @Part MultipartBody.Part imageFile
+    );
+
+    // Delete garage staff - Xóa nhân viên (GARAGE only)
+    @DELETE("api/GarageStaff/{id}")
+    Call<BaseResponse> deleteGarageStaff(@Path("id") int id);
 }

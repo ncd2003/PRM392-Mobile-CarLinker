@@ -3,6 +3,7 @@ package com.example.prm392_mobile_carlinker.ui.garage;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -30,6 +31,7 @@ import com.google.android.material.button.MaterialButton;
  */
 public class GarageDetailActivity extends AppCompatActivity {
     public static final String EXTRA_GARAGE_ID = "garage_id";
+    private static final String TAG = "GarageDetailActivity";
 
     private GarageDetailViewModel viewModel;
     private GarageServiceCategoryAdapter serviceCategoryAdapter;
@@ -150,13 +152,51 @@ public class GarageDetailActivity extends AppCompatActivity {
         // Set toolbar title
         collapsingToolbar.setTitle(garage.getName());
 
-        // Load garage image
-        if (garage.getImage() != null && !garage.getImage().isEmpty()) {
+        // Load garage image với xử lý URL HTTPS đầy đủ
+        String imageUrl = garage.getImage();
+        Log.d(TAG, "========== GARAGE DETAIL IMAGE DEBUG ==========");
+        Log.d(TAG, "Garage ID: " + garage.getId());
+        Log.d(TAG, "Garage Name: " + garage.getName());
+        Log.d(TAG, "Image URL from API: " + imageUrl);
+
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            Log.d(TAG, "Loading image from: " + imageUrl);
+
             Glide.with(this)
-                    .load(garage.getImage())
+                    .load(imageUrl)
                     .placeholder(R.drawable.ic_launcher_background)
                     .error(R.drawable.ic_launcher_background)
+                    .centerCrop()
+                    .listener(new com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@androidx.annotation.Nullable com.bumptech.glide.load.engine.GlideException e,
+                                                    Object model,
+                                                    com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable> target,
+                                                    boolean isFirstResource) {
+                            Log.e(TAG, "Failed to load garage detail image: " + imageUrl, e);
+                            if (e != null) {
+                                Log.e(TAG, "Error causes: ");
+                                for (Throwable cause : e.getRootCauses()) {
+                                    Log.e(TAG, " - " + cause.getMessage());
+                                }
+                            }
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(android.graphics.drawable.Drawable resource,
+                                                      Object model,
+                                                      com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable> target,
+                                                      com.bumptech.glide.load.DataSource dataSource,
+                                                      boolean isFirstResource) {
+                            Log.d(TAG, "Garage detail image loaded successfully: " + imageUrl);
+                            return false;
+                        }
+                    })
                     .into(ivGarageImage);
+        } else {
+            Log.w(TAG, "Image URL is null or empty, using placeholder");
+            ivGarageImage.setImageResource(R.drawable.ic_launcher_background);
         }
 
         // Set garage info

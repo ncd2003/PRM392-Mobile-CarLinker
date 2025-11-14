@@ -199,6 +199,27 @@
             android:label="Đặt Lịch Dịch Vụ"
             android:parentActivityName=".ui.garage.GarageDetailActivity" />
 
+        <!-- Garage Staff List Activity -->
+        <activity
+            android:name=".ui.garagestaff.GarageStaffListActivity"
+            android:exported="false"
+            android:label="Quản lý nhân viên"
+            android:parentActivityName=".ui.home.HomeActivity" />
+
+        <!-- Garage Staff Detail Activity -->
+        <activity
+            android:name=".ui.garagestaff.GarageStaffDetailActivity"
+            android:exported="false"
+            android:label="Chi tiết nhân viên"
+            android:parentActivityName=".ui.garagestaff.GarageStaffListActivity" />
+
+        <!-- Garage Staff Form Activity -->
+        <activity
+            android:name=".ui.garagestaff.GarageStaffFormActivity"
+            android:exported="false"
+            android:label="Thêm/Sửa nhân viên"
+            android:parentActivityName=".ui.garagestaff.GarageStaffListActivity" />
+
         <!-- User Info Activity -->
         <activity
             android:name=".ui.user.UserInfoActivity"
@@ -212,6 +233,27 @@
             android:exported="true"
             android:label="Đăng nhập"
             android:parentActivityName=".ui.home.HomeActivity" />
+
+        <!-- Register Activity -->
+        <activity
+            android:name=".ui.auth.RegisterActivity"
+            android:exported="false"
+            android:label="Đăng ký"
+            android:parentActivityName=".ui.auth.LoginActivity" />
+
+        <!-- Partner Register Activity -->
+        <activity
+            android:name=".ui.auth.PartnerRegisterActivity"
+            android:exported="false"
+            android:label="Đăng ký đối tác"
+            android:parentActivityName=".ui.auth.LoginActivity" />
+
+        <!-- Staff Login Activity -->
+        <activity
+            android:name=".ui.auth.StaffLoginActivity"
+            android:exported="false"
+            android:label="Đăng nhập nhân viên"
+            android:parentActivityName=".ui.auth.LoginActivity" />
 
     </application>
 

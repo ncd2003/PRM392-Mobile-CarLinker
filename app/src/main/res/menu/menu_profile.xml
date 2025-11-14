@@ -17,6 +17,11 @@
         android:title="Lịch sử đơn hàng" />
 
     <item
+        android:id="@+id/menu_garage_staff"
+        android:icon="@android:drawable/ic_menu_my_calendar"
+        android:title="Quản lý nhân viên (Garage)" />
+
+    <item
         android:id="@+id/menu_service_category"
         android:icon="@android:drawable/ic_menu_manage"
         android:title="Quản lý Gói Dịch Vụ (Admin)" />

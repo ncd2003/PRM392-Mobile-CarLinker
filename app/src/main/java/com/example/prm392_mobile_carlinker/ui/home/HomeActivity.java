@@ -15,6 +15,7 @@ import androidx.appcompat.widget.PopupMenu;
 import com.example.prm392_mobile_carlinker.R;
 import com.example.prm392_mobile_carlinker.ui.auth.LoginActivity;
 import com.example.prm392_mobile_carlinker.ui.garage.GarageListActivity;
+import com.example.prm392_mobile_carlinker.ui.garagestaff.GarageStaffListActivity;
 import com.example.prm392_mobile_carlinker.ui.order.MyOrdersActivity;
 import com.example.prm392_mobile_carlinker.ui.servicecategory.ServiceCategoryListActivity;
 import com.example.prm392_mobile_carlinker.ui.shop.ProductListActivity;
@@ -133,6 +134,12 @@ public class HomeActivity extends AppCompatActivity {
         PopupMenu popup = new PopupMenu(this, anchor);
         popup.getMenuInflater().inflate(R.menu.menu_profile, popup.getMenu());
 
+        // Lấy role của user
+        String userRole = sessionManager.getUserRoleString();
+
+        // Ẩn/hiện menu items dựa trên role
+        configureMenuByRole(popup.getMenu(), userRole);
+
         popup.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
 
@@ -144,6 +151,9 @@ public class HomeActivity extends AppCompatActivity {
                 return true;
             } else if (itemId == R.id.menu_order_history) {
                 openOrderHistory();
+                return true;
+            } else if (itemId == R.id.menu_garage_staff) {
+                openGarageStaffManagement();
                 return true;
             } else if (itemId == R.id.menu_service_category) {
                 openServiceCategoryManagement();
@@ -163,6 +173,57 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         popup.show();
+    }
+
+    /**
+     * Cấu hình menu items dựa trên role của user
+     */
+    private void configureMenuByRole(android.view.Menu menu, String role) {
+        // Lấy các menu items
+        MenuItem menuVehicle = menu.findItem(R.id.menu_vehicle_management);
+        MenuItem menuOrderHistory = menu.findItem(R.id.menu_order_history);
+        MenuItem menuGarageStaff = menu.findItem(R.id.menu_garage_staff);
+        MenuItem menuServiceCategory = menu.findItem(R.id.menu_service_category);
+        MenuItem menuServiceItem = menu.findItem(R.id.menu_service_item);
+
+        // Mặc định ẩn tất cả menu đặc biệt
+        if (menuVehicle != null) menuVehicle.setVisible(false);
+        if (menuOrderHistory != null) menuOrderHistory.setVisible(false);
+        if (menuGarageStaff != null) menuGarageStaff.setVisible(false);
+        if (menuServiceCategory != null) menuServiceCategory.setVisible(false);
+        if (menuServiceItem != null) menuServiceItem.setVisible(false);
+
+        // Hiển thị menu dựa trên role
+        switch (role.toUpperCase()) {
+            case "ADMIN":
+                // Admin: Quản lý gói dịch vụ + Quản lý dịch vụ
+                if (menuServiceCategory != null) menuServiceCategory.setVisible(true);
+                if (menuServiceItem != null) menuServiceItem.setVisible(true);
+                break;
+
+            case "GARAGE":
+                // Garage: Quản lý nhân viên
+                if (menuGarageStaff != null) menuGarageStaff.setVisible(true);
+                break;
+
+            case "CUSTOMER":
+                // Customer: Quản lý xe + Lịch sử đơn hàng
+                if (menuVehicle != null) menuVehicle.setVisible(true);
+                if (menuOrderHistory != null) menuOrderHistory.setVisible(true);
+                break;
+
+            case "DEALER":
+                // Dealer: Quản lý đơn hàng
+                if (menuOrderHistory != null) {
+                    menuOrderHistory.setVisible(true);
+                    menuOrderHistory.setTitle("Quản lý đơn hàng (Dealer)");
+                }
+                break;
+
+            default:
+                // Guest hoặc role không xác định - không hiển thị menu đặc biệt
+                break;
+        }
     }
 
     /**
@@ -186,7 +247,24 @@ public class HomeActivity extends AppCompatActivity {
      * Mở trang lịch sử đơn hàng
      */
     private void openOrderHistory() {
-        Intent intent = new Intent(this, MyOrdersActivity.class);
+        String userRole = sessionManager.getUserRoleString();
+
+        // Nếu là DEALER, mở trang quản lý đơn hàng của dealer
+        if ("DEALER".equalsIgnoreCase(userRole)) {
+            Intent intent = new Intent(this, com.example.prm392_mobile_carlinker.ui.dealer.DealerOrdersActivity.class);
+            startActivity(intent);
+        } else {
+            // Customer: Lịch sử đơn hàng của mình
+            Intent intent = new Intent(this, MyOrdersActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    /**
+     * Mở trang quản lý nhân viên (Garage only)
+     */
+    private void openGarageStaffManagement() {
+        Intent intent = new Intent(this, GarageStaffListActivity.class);
         startActivity(intent);
     }
 
@@ -226,7 +304,8 @@ public class HomeActivity extends AppCompatActivity {
      * Xử lý chức năng cứu hộ khẩn cấp
      */
     private void handleEmergency() {
-        Toast.makeText(this, R.string.toast_emergency, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, GarageListActivity.class);
+        startActivity(intent);
     }
 
     /**

@@ -227,6 +227,11 @@ public class ProductListActivity extends AppCompatActivity implements ProductAda
             Intent intent = new Intent(this, MyOrdersActivity.class);
             startActivity(intent);
             return true;
+        } else if (id == R.id.action_messages) {
+            // Open chat room list activity
+            Intent intent = new Intent(this, com.example.prm392_mobile_carlinker.ui.chat.ChatRoomListActivity.class);
+            startActivity(intent);
+            return true;
         } else if (id == R.id.action_dealer_orders) {
             // Open dealer orders activity
             Intent intent = new Intent(this, com.example.prm392_mobile_carlinker.ui.dealer.DealerOrdersActivity.class);

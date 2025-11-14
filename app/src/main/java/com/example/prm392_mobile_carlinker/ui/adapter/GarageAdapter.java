@@ -1,5 +1,6 @@
 package com.example.prm392_mobile_carlinker.ui.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,8 @@ import java.util.Locale;
  * Adapter hiển thị danh sách garage trong RecyclerView
  */
 public class GarageAdapter extends RecyclerView.Adapter<GarageAdapter.GarageViewHolder> {
+
+    private static final String TAG = "GarageAdapter";
 
     private List<Garage> garageList;
     private OnGarageClickListener listener;
@@ -80,16 +83,74 @@ public class GarageAdapter extends RecyclerView.Adapter<GarageAdapter.GarageView
         }
 
         public void bind(final Garage garage) {
-            // Load image
-            Glide.with(itemView.getContext())
-                    .load(garage.getImage())
-                    .placeholder(R.drawable.ic_launcher_background)
-                    .error(R.drawable.ic_launcher_background)
-                    .into(imgGarage);
+            // Load image với xử lý URL đầy đủ
+//            String imageUrl = garage.getImage();
 
+            // Log để debug
+            Log.d(TAG, "========== GARAGE IMAGE DEBUG ==========");
+            Log.d(TAG, "Garage ID: " + garage.getId());
+            Log.d(TAG, "Garage Name: " + garage.getName());
+//            Log.d(TAG, "Image URL from API: " + imageUrl);
+
+            // Load ảnh với Glide
+//            if (imageUrl != null && !imageUrl.isEmpty()) {
+//                Log.d(TAG, "Loading image from: " + imageUrl);
+//
+//                Glide.with(itemView.getContext())
+//                        .load(imageUrl)
+//                        .placeholder(R.drawable.ic_launcher_background)
+//                        .error(R.drawable.ic_launcher_background)
+//                        .centerCrop()
+//                        .listener(new com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable>() {
+//                            @Override
+//                            public boolean onLoadFailed(@androidx.annotation.Nullable com.bumptech.glide.load.engine.GlideException e,
+//                                                        Object model,
+//                                                        com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable> target,
+//                                                        boolean isFirstResource) {
+//                                Log.e(TAG, "Failed to load image: " + imageUrl, e);
+//                                if (e != null) {
+//                                    Log.e(TAG, "Error causes: ");
+//                                    for (Throwable cause : e.getRootCauses()) {
+//                                        Log.e(TAG, " - " + cause.getMessage());
+//                                    }
+//                                }
+//                                return false;
+//                            }
+//
+//                            @Override
+//                            public boolean onResourceReady(android.graphics.drawable.Drawable resource,
+//                                                          Object model,
+//                                                          com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable> target,
+//                                                          com.bumptech.glide.load.DataSource dataSource,
+//                                                          boolean isFirstResource) {
+//                                Log.d(TAG, "Image loaded successfully: " + imageUrl);
+//                                return false;
+//                            }
+//                        })
+//                        .into(imgGarage);
+//            } else {
+//                Log.w(TAG, "Image URL is null or empty, using placeholder");
+//                imgGarage.setImageResource(R.drawable.ic_launcher_background);
+//            }
+// Load product image
+            if (garage.getImage() != null && !garage.getImage().isEmpty()) {
+                Glide.with(itemView.getContext())
+                        .load(garage.getImage())
+                        .placeholder(R.drawable.ic_launcher_foreground)
+                        .error(R.drawable.ic_launcher_foreground)
+                        .into(imgGarage);
+            }
             // Set data
             tvGarageName.setText(garage.getName());
-            tvGarageDescription.setText(garage.getDescription());
+
+            // Xử lý description null hoặc empty
+            if (garage.getDescription() != null && !garage.getDescription().isEmpty()) {
+                tvGarageDescription.setText(garage.getDescription());
+                tvGarageDescription.setVisibility(View.VISIBLE);
+            } else {
+                tvGarageDescription.setVisibility(View.GONE);
+            }
+
             tvOperatingTime.setText("⏰ " + garage.getOperatingTime());
             tvPhoneNumber.setText("📞 " + garage.getPhoneNumber());
 
@@ -124,4 +185,3 @@ public class GarageAdapter extends RecyclerView.Adapter<GarageAdapter.GarageView
         }
     }
 }
-

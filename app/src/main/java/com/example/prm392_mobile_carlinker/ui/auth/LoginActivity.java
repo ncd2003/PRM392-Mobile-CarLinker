@@ -33,6 +33,8 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnContinueAsGuest;
     private TextView tvForgotPassword;
     private TextView tvRegister;
+    private TextView tvStaffLogin;
+    private TextView tvPartnerRegister;
     private ProgressBar progressBar;
 
     private SessionManager sessionManager;
@@ -55,6 +57,8 @@ public class LoginActivity extends AppCompatActivity {
         btnContinueAsGuest = findViewById(R.id.btnContinueAsGuest);
         tvForgotPassword = findViewById(R.id.tvForgotPassword);
         tvRegister = findViewById(R.id.tvRegister);
+        tvStaffLogin = findViewById(R.id.tvStaffLogin);
+        tvPartnerRegister = findViewById(R.id.tvPartnerRegister);
         progressBar = findViewById(R.id.progressBar);
     }
 
@@ -68,7 +72,20 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         tvRegister.setOnClickListener(v -> {
-            Toast.makeText(this, "Chức năng đăng ký đang phát triển", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+            startActivity(intent);
+        });
+
+        // Staff Login - Chuyển sang StaffLoginActivity
+        tvStaffLogin.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, StaffLoginActivity.class);
+            startActivity(intent);
+        });
+
+        // Partner Register - Chuyển sang PartnerRegisterActivity
+        tvPartnerRegister.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, PartnerRegisterActivity.class);
+            startActivity(intent);
         });
     }
 

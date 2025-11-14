@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F5F5F5"
-    tools:context=".ui.auth.LoginActivity">
+    tools:context=".ui.auth.StaffLoginActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -19,32 +19,41 @@
             android:padding="24dp"
             android:gravity="center">
 
+            <!-- Back Button -->
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_marginBottom="24dp"
+                app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel"
+                app:title="Đăng nhập nhân viên"
+                app:titleTextColor="@android:color/black" />
+
             <!-- Logo -->
             <ImageView
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_marginTop="40dp"
-                android:layout_marginBottom="24dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginBottom="16dp"
                 android:src="@mipmap/ic_launcher"
                 android:contentDescription="App Logo" />
 
-            <!-- App Name -->
+            <!-- Title -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CarLinker"
-                android:textSize="32sp"
+                android:text="Nhân viên Garage"
+                android:textSize="28sp"
                 android:textStyle="bold"
-                android:textColor="#6200EE"
+                android:textColor="#FF9800"
                 android:layout_marginBottom="8dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Chăm sóc xe của bạn"
-                android:textSize="16sp"
+                android:text="Đăng nhập để quản lý dịch vụ"
+                android:textSize="14sp"
                 android:textColor="#666666"
-                android:layout_marginBottom="40dp" />
+                android:layout_marginBottom="32dp" />
 
             <!-- Login Card -->
             <com.google.android.material.card.MaterialCardView
@@ -73,13 +82,13 @@
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Email"
+                        android:hint="Email nhân viên"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         app:startIconDrawable="@android:drawable/ic_dialog_email"
                         android:layout_marginBottom="16dp">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etEmail"
+                            android:id="@+id/etStaffEmail"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="textEmailAddress"
@@ -97,7 +106,7 @@
                         android:layout_marginBottom="24dp">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etPassword"
+                            android:id="@+id/etStaffPassword"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="textPassword"
@@ -106,11 +115,12 @@
 
                     <!-- Login Button -->
                     <Button
-                        android:id="@+id/btnLogin"
+                        android:id="@+id/btnStaffLogin"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Đăng nhập"
                         android:textSize="16sp"
+                        android:backgroundTint="#FF9800"
                         android:padding="16dp"
                         android:layout_marginBottom="16dp" />
 
@@ -122,80 +132,22 @@
                         android:layout_gravity="center"
                         android:visibility="gone" />
 
-                    <!-- Forgot Password -->
-                    <TextView
-                        android:id="@+id/tvForgotPassword"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="Quên mật khẩu?"
-                        android:textSize="14sp"
-                        android:textColor="#6200EE"
-                        android:padding="8dp" />
-
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Register Link -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Chưa có tài khoản? "
-                    android:textSize="14sp"
-                    android:textColor="#666666" />
-
-                <TextView
-                    android:id="@+id/tvRegister"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Đăng ký ngay"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="#6200EE"
-                    android:padding="4dp" />
-            </LinearLayout>
-
-            <!-- Continue as Guest -->
-            <Button
-                android:id="@+id/btnContinueAsGuest"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="Tiếp tục dùng thử"
-                android:textSize="14sp"
-                style="@style/Widget.MaterialComponents.Button.TextButton" />
-
-            <!-- Staff Login Link -->
+            <!-- Back to Customer Login -->
             <TextView
-                android:id="@+id/tvStaffLogin"
+                android:id="@+id/tvBackToCustomerLogin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Đăng nhập nếu là nhân viên"
+                android:text="← Quay lại đăng nhập khách hàng"
                 android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#FF9800"
-                android:padding="8dp" />
-
-            <!-- Partner Register Link -->
-            <TextView
-                android:id="@+id/tvPartnerRegister"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Đăng ký để trở thành đối tác"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#4CAF50"
+                android:textColor="#6200EE"
                 android:padding="8dp" />
 
         </LinearLayout>
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

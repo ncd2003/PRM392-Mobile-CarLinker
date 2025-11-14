@@ -2,6 +2,8 @@ package com.example.prm392_mobile_carlinker.ui.order;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -158,6 +160,23 @@ public class MyOrdersActivity extends AppCompatActivity implements OrderAdapter.
                 })
                 .setNegativeButton("Không", null)
                 .show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_my_orders, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_messages) {
+            // Open chat/messages
+            Intent intent = new Intent(this, com.example.prm392_mobile_carlinker.ui.chat.ChatRoomListActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

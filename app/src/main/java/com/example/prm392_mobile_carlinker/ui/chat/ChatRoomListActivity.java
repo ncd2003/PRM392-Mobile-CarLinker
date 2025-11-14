@@ -7,6 +7,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,11 +16,13 @@ import com.example.prm392_mobile_carlinker.data.model.chat.ChatRoom;
 import com.example.prm392_mobile_carlinker.data.repository.ChatRepository;
 import com.example.prm392_mobile_carlinker.data.repository.Result;
 import com.example.prm392_mobile_carlinker.ui.adapter.ChatRoomAdapter;
+import com.example.prm392_mobile_carlinker.util.SessionManager;
 
 import java.util.List;
 
 /**
  * Activity for displaying list of chat rooms
+ * Supports both Customer and Garage roles
  */
 public class ChatRoomListActivity extends AppCompatActivity {
 
@@ -31,16 +34,22 @@ public class ChatRoomListActivity extends AppCompatActivity {
 
     private ChatRoomAdapter adapter;
     private ChatRepository chatRepository;
+    private SessionManager sessionManager;
     
-    private int customerId;
+    private int userId;
+    private String userRole;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room_list);
 
-        // Get customer ID from intent
-        customerId = getIntent().getIntExtra(EXTRA_CUSTOMER_ID, 0);
+        // Initialize SessionManager
+        sessionManager = new SessionManager(this);
+        
+        // Get user info from SessionManager
+        userId = sessionManager.getUserId();
+        userRole = sessionManager.getUserRoleString();
 
         initializeViews();
         setupRecyclerView();
@@ -67,7 +76,20 @@ public class ChatRoomListActivity extends AppCompatActivity {
     private void loadChatRooms() {
         showLoading(true);
 
-        chatRepository.getCustomerChatRooms(customerId).observe(this, result -> {
+        // Load chat rooms based on user role
+        LiveData<Result<List<ChatRoom>>> chatRoomsLiveData;
+        
+        if ("STAFF".equalsIgnoreCase(userRole) || "GARAGE".equalsIgnoreCase(userRole)) {
+            // For garage staff/owner, load garage chat rooms
+            // Note: userId here is the staff's userId, but we need garageId
+            // Assuming staff are associated with a garage in their session
+            chatRoomsLiveData = chatRepository.getGarageChatRooms(userId);
+        } else {
+            // For customers, load customer chat rooms
+            chatRoomsLiveData = chatRepository.getCustomerChatRooms(userId);
+        }
+
+        chatRoomsLiveData.observe(this, result -> {
             showLoading(false);
 
             if (result != null && result.status == Result.Status.SUCCESS) {
@@ -95,7 +117,7 @@ public class ChatRoomListActivity extends AppCompatActivity {
         intent.putExtra(ChatActivity.EXTRA_ROOM_ID, chatRoom.getId());
         intent.putExtra(ChatActivity.EXTRA_GARAGE_ID, chatRoom.getGarageId());
         intent.putExtra(ChatActivity.EXTRA_GARAGE_NAME, chatRoom.getGarageName());
-        intent.putExtra(ChatActivity.EXTRA_CUSTOMER_ID, customerId);
+        intent.putExtra(ChatActivity.EXTRA_CUSTOMER_ID, chatRoom.getCustomerId());
         startActivity(intent);
     }
 

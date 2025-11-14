@@ -1,6 +1,9 @@
 package com.example.prm392_mobile_carlinker.ui.order;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -236,6 +239,23 @@ public class OrderDetailActivity extends AppCompatActivity {
                 color = getResources().getColor(android.R.color.darker_gray);
         }
         tvOrderStatus.setTextColor(color);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_order_detail, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_contact_support) {
+            // Open chat/messages
+            Intent intent = new Intent(this, com.example.prm392_mobile_carlinker.ui.chat.ChatRoomListActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -19,6 +19,11 @@
         android:title="Lịch sử đơn hàng" />
 
     <item
+        android:id="@+id/menu_messages"
+        android:icon="@drawable/ic_message"
+        android:title="Tin nhắn" />
+
+    <item
         android:id="@+id/menu_garage_staff"
         android:icon="@android:drawable/ic_menu_my_calendar"
         android:title="Quản lý nhân viên" />

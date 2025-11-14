@@ -30,6 +30,7 @@ public class HomeActivity extends AppCompatActivity {
     private Button btnEmergency;
     private FrameLayout cardShop, cardBooking, cardGarage, cardSupport;
     private MaterialCardView btnProfileMenu;
+    private MaterialCardView btnMessages;
     private TextView tvWelcomeUser;
     private Button btnLoginPrompt;
     private SessionManager sessionManager;
@@ -69,6 +70,7 @@ public class HomeActivity extends AppCompatActivity {
         cardGarage = findViewById(R.id.card_garage);
         cardSupport = findViewById(R.id.card_support);
         btnProfileMenu = findViewById(R.id.btnProfileMenu);
+        btnMessages = findViewById(R.id.btnMessages);
         tvWelcomeUser = findViewById(R.id.tvWelcomeUser);
         btnLoginPrompt = findViewById(R.id.btnLoginPrompt);
     }
@@ -80,11 +82,13 @@ public class HomeActivity extends AppCompatActivity {
         if (sessionManager.isLoggedIn()) {
             // User đã login - hiển thị thông tin user
             btnProfileMenu.setVisibility(View.VISIBLE);
+            btnMessages.setVisibility(View.VISIBLE);
             btnLoginPrompt.setVisibility(View.GONE);
             loadUserInfo();
         } else {
             // User chưa login - hiển thị nút đăng nhập
             btnProfileMenu.setVisibility(View.GONE);
+            btnMessages.setVisibility(View.GONE);
             btnLoginPrompt.setVisibility(View.VISIBLE);
             tvWelcomeUser.setText("Xin chào!");
         }
@@ -110,6 +114,9 @@ public class HomeActivity extends AppCompatActivity {
 
         // Profile Menu Button (khi đã login)
         btnProfileMenu.setOnClickListener(v -> showProfileMenu(v));
+
+        // Messages Button (khi đã login)
+        btnMessages.setOnClickListener(v -> openMessages());
 
         // Nút cứu hộ khẩn cấp
         btnEmergency.setOnClickListener(v -> handleEmergency());
@@ -151,6 +158,9 @@ public class HomeActivity extends AppCompatActivity {
                 return true;
             } else if (itemId == R.id.menu_order_history) {
                 openOrderHistory();
+                return true;
+            } else if (itemId == R.id.menu_messages) {
+                openMessages();
                 return true;
             } else if (itemId == R.id.menu_garage_staff) {
                 openGarageStaffManagement();
@@ -274,6 +284,14 @@ public class HomeActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MyOrdersActivity.class);
             startActivity(intent);
         }
+    }
+
+    /**
+     * Mở trang tin nhắn (chat)
+     */
+    private void openMessages() {
+        Intent intent = new Intent(this, com.example.prm392_mobile_carlinker.ui.chat.ChatRoomListActivity.class);
+        startActivity(intent);
     }
 
     /**

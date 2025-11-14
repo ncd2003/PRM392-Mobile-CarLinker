@@ -243,6 +243,27 @@
             android:label="Thêm/Sửa nhân viên"
             android:parentActivityName=".ui.garagestaff.GarageStaffListActivity" />
 
+        <!-- Garage Service Item Activity -->
+        <activity
+            android:name=".ui.garageserviceitem.GarageServiceItemActivity"
+            android:exported="false"
+            android:label="Quản lý dịch vụ Garage"
+            android:parentActivityName=".ui.home.HomeActivity" />
+
+        <!-- Staff Service Record Activity -->
+        <activity
+            android:name=".ui.staff.StaffServiceRecordActivity"
+            android:exported="false"
+            android:label="Quản lý dịch vụ (Staff)"
+            android:parentActivityName=".ui.home.HomeActivity" />
+
+        <!-- Staff Service Record Detail Activity -->
+        <activity
+            android:name=".ui.staff.StaffServiceRecordDetailActivity"
+            android:exported="false"
+            android:label="Chi tiết dịch vụ"
+            android:parentActivityName=".ui.staff.StaffServiceRecordActivity" />
+
         <!-- User Info Activity -->
         <activity
             android:name=".ui.user.UserInfoActivity"

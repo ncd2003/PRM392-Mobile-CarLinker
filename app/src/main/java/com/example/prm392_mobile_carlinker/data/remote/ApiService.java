@@ -26,6 +26,8 @@ import com.example.prm392_mobile_carlinker.data.model.chat.UploadFileResponse;
 import com.example.prm392_mobile_carlinker.data.model.garage.GarageDetailResponse;
 import com.example.prm392_mobile_carlinker.data.model.garage.GarageResponse;
 import com.example.prm392_mobile_carlinker.data.model.garage.GarageCreateResponse;
+import com.example.prm392_mobile_carlinker.data.model.garage.GarageUpdateServiceItem;
+import com.example.prm392_mobile_carlinker.data.model.garage.GarageServiceItemResponse;
 import com.example.prm392_mobile_carlinker.data.model.order.CreateOrderRequest;
 import com.example.prm392_mobile_carlinker.data.model.order.OrderResponse;
 import com.example.prm392_mobile_carlinker.data.model.order.OrderListResponse;
@@ -47,6 +49,8 @@ import com.example.prm392_mobile_carlinker.data.model.garagestaff.GarageStaffLis
 import com.example.prm392_mobile_carlinker.data.model.garagestaff.GarageStaffUpdateRequest;
 import com.example.prm392_mobile_carlinker.data.model.servicerecord.ServiceRecordCreateRequest;
 import com.example.prm392_mobile_carlinker.data.model.servicerecord.ServiceRecordResponse;
+import com.example.prm392_mobile_carlinker.data.model.servicerecord.ServiceRecordListResponse;
+import com.example.prm392_mobile_carlinker.data.model.servicerecord.UpdateServiceRecordStatusRequest;
 import com.example.prm392_mobile_carlinker.data.model.user.UserResponse;
 import com.example.prm392_mobile_carlinker.data.model.vehicle.VehicleListResponse;
 import com.example.prm392_mobile_carlinker.data.model.vehicle.VehicleResponse;
@@ -376,6 +380,22 @@ public interface ApiService {
             @Body ServiceRecordCreateRequest request
     );
 
+    // Get all service records - Lấy danh sách tất cả service records (STAFF only)
+    @GET("api/ServiceRecord")
+    Call<ServiceRecordListResponse> getAllServiceRecords(
+            @Query("page") int page,
+            @Query("size") int size,
+            @Query("sortBy") String sortBy,
+            @Query("isAsc") boolean isAsc
+    );
+
+    // Update service record status - Cập nhật trạng thái service record (STAFF only)
+    @PATCH("api/ServiceRecord/{id}")
+    Call<BaseResponse> updateServiceRecordStatus(
+            @Path("id") int id,
+            @Body UpdateServiceRecordStatusRequest request
+    );
+
     // ============== GARAGE STAFF APIs ==============
 
     // Get all garage staff - Lấy danh sách nhân viên garage (GARAGE only)
@@ -413,4 +433,10 @@ public interface ApiService {
     // Delete garage staff - Xóa nhân viên (GARAGE only)
     @DELETE("api/GarageStaff/{id}")
     Call<BaseResponse> deleteGarageStaff(@Path("id") int id);
+
+    // ============== GARAGE SERVICE ITEMS APIs ==============
+
+    // Update garage service items - Cập nhật danh sách dịch vụ và giá của garage (GARAGE role)
+    @PATCH("api/Garage/service-items")
+    Call<BaseResponse> updateGarageServiceItems(@Body List<GarageUpdateServiceItem> request);
 }

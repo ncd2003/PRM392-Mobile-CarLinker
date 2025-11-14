@@ -155,6 +155,12 @@ public class HomeActivity extends AppCompatActivity {
             } else if (itemId == R.id.menu_garage_staff) {
                 openGarageStaffManagement();
                 return true;
+            } else if (itemId == R.id.menu_garage_service_item) {
+                openGarageServiceItemManagement();
+                return true;
+            } else if (itemId == R.id.menu_staff_service_record) {
+                openStaffServiceRecordManagement();
+                return true;
             } else if (itemId == R.id.menu_service_category) {
                 openServiceCategoryManagement();
                 return true;
@@ -185,6 +191,8 @@ public class HomeActivity extends AppCompatActivity {
         MenuItem menuGarageStaff = menu.findItem(R.id.menu_garage_staff);
         MenuItem menuServiceCategory = menu.findItem(R.id.menu_service_category);
         MenuItem menuServiceItem = menu.findItem(R.id.menu_service_item);
+        MenuItem menuGarageServiceItem = menu.findItem(R.id.menu_garage_service_item);
+        MenuItem menuStaffServiceRecord = menu.findItem(R.id.menu_staff_service_record);
 
         // Mặc định ẩn tất cả menu đặc biệt
         if (menuVehicle != null) menuVehicle.setVisible(false);
@@ -192,6 +200,8 @@ public class HomeActivity extends AppCompatActivity {
         if (menuGarageStaff != null) menuGarageStaff.setVisible(false);
         if (menuServiceCategory != null) menuServiceCategory.setVisible(false);
         if (menuServiceItem != null) menuServiceItem.setVisible(false);
+        if (menuGarageServiceItem != null) menuGarageServiceItem.setVisible(false);
+        if (menuStaffServiceRecord != null) menuStaffServiceRecord.setVisible(false);
 
         // Hiển thị menu dựa trên role
         switch (role.toUpperCase()) {
@@ -202,8 +212,14 @@ public class HomeActivity extends AppCompatActivity {
                 break;
 
             case "GARAGE":
-                // Garage: Quản lý nhân viên
+                // Garage: Quản lý nhân viên + Quản lý dịch vụ của garage
                 if (menuGarageStaff != null) menuGarageStaff.setVisible(true);
+                if (menuGarageServiceItem != null) menuGarageServiceItem.setVisible(true);
+                break;
+
+            case "STAFF":
+                // Staff: Quản lý service records
+                if (menuStaffServiceRecord != null) menuStaffServiceRecord.setVisible(true);
                 break;
 
             case "CUSTOMER":
@@ -265,6 +281,22 @@ public class HomeActivity extends AppCompatActivity {
      */
     private void openGarageStaffManagement() {
         Intent intent = new Intent(this, GarageStaffListActivity.class);
+        startActivity(intent);
+    }
+
+    /**
+     * Mở trang quản lý dịch vụ của garage (Garage only)
+     */
+    private void openGarageServiceItemManagement() {
+        Intent intent = new Intent(this, com.example.prm392_mobile_carlinker.ui.garageserviceitem.GarageServiceItemActivity.class);
+        startActivity(intent);
+    }
+
+    /**
+     * Mở trang quản lý dịch vụ của garage (Garage only)
+     */
+    private void openStaffServiceRecordManagement() {
+        Intent intent = new Intent(this, com.example.prm392_mobile_carlinker.ui.staff.StaffServiceRecordActivity.class);
         startActivity(intent);
     }
 

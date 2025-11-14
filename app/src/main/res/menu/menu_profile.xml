@@ -4,7 +4,9 @@
     <item
         android:id="@+id/menu_user_info"
         android:icon="@android:drawable/ic_menu_info_details"
-        android:title="Thông tin cá nhân" />
+        android:title="Thông tin cá nhân"
+        android:visible="false"
+        />
 
     <item
         android:id="@+id/menu_vehicle_management"
@@ -19,7 +21,17 @@
     <item
         android:id="@+id/menu_garage_staff"
         android:icon="@android:drawable/ic_menu_my_calendar"
-        android:title="Quản lý nhân viên (Garage)" />
+        android:title="Quản lý nhân viên" />
+
+    <item
+        android:id="@+id/menu_garage_service_item"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="Quản lý dịch vụ (Garage)" />
+
+    <item
+        android:id="@+id/menu_staff_service_record"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="Quản lý dịch vụ (Staff)" />
 
     <item
         android:id="@+id/menu_service_category"
@@ -29,12 +41,13 @@
     <item
         android:id="@+id/menu_service_item"
         android:icon="@android:drawable/ic_menu_edit"
-        android:title="Quản lý Dịch Vụ (Admin)" />
+        android:title="Quản lý Dịch Vụ" />
 
     <item
         android:id="@+id/menu_settings"
         android:icon="@android:drawable/ic_menu_preferences"
-        android:title="Cài đặt" />
+        android:title="Cài đặt"
+        android:visible="false"/>
 
     <item
         android:id="@+id/menu_logout"

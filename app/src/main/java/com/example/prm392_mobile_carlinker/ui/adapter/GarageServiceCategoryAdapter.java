@@ -49,7 +49,7 @@ public class GarageServiceCategoryAdapter extends RecyclerView.Adapter<GarageSer
     static class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tvCategoryName;
         private RecyclerView rvServiceItems;
-        private GarageServiceItemAdapter serviceItemAdapter;
+        private GarageDetailServiceItemAdapter serviceItemAdapter;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -57,7 +57,7 @@ public class GarageServiceCategoryAdapter extends RecyclerView.Adapter<GarageSer
             rvServiceItems = itemView.findViewById(R.id.rvServiceItems);
 
             // Setup nested RecyclerView for service items
-            serviceItemAdapter = new GarageServiceItemAdapter();
+            serviceItemAdapter = new GarageDetailServiceItemAdapter();
             rvServiceItems.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
             rvServiceItems.setAdapter(serviceItemAdapter);
             rvServiceItems.setNestedScrollingEnabled(false);
